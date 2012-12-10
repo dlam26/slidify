@@ -1,3 +1,7 @@
+// TODO:  rename left/right to prev/next etc.
+//          why?  the button that goes to the next slide might not
+//          not neccessarily be on the right!
+
 (function($) {
     // see http://docs.jquery.com/Plugins/Authoring etc.
 
@@ -34,12 +38,20 @@
                 'right': '.slide_right',   // selector for the right arrow button
                 'pagecontrol': '.page_control',   // selector for the page control
                 'hasLeftStraddleThing' : false,   // hack to support "featured content"
-                'looped': true  // whether or not moving next from the last slide goes to the first
+                'looped': true,  // whether or not moving next from the last slide goes to the first
+
+                'sliderChangedCallback': function(currSlideNumber, newSlideNumber) {}  // called when the left/right arrow buttons are clicked
             }, options);
 
-            return this.each(function() {
+            // class denoting the slide which is currently visible
+            var ACTIVE = 'active';
+
+            return this.each(function(index, value) {
 
                 var slider = $(this);  // holds the container for the slider
+
+                // the first slide should be "active", so add a class to it
+                slider.find(opts.slide + ':first').addClass(ACTIVE);
 
                 // set the width of an actual slide, defaulting
                 // to 970 pixels if we can't find any!
@@ -55,25 +67,25 @@
                 //     2.  we're on the first slide and the left arrow is pressed
                 var willLoopAround = false;
 
+                console.log('opts.left:  ' + opts.left + '   opts.right: ' + opts.right);
+
                 // bind the left and arrow buttons
-                slider.find(opts.left).click(function() {
-                    doAnimate(LEFT);
-                });
-                slider.find(opts.right).click(function() {
-                    doAnimate(RIGHT);
-                });
+                enableNextPrevButtons();
 
                 // clicking on a arrow buttons should show a i-am-pressed state
                 slider.find([opts.left, opts.right].join(',')).bind('mousedown mouseup mouseout', toggleArrowPressed);
 
                 function doAnimate(direction) {
 
+                    // disable the next/prev buttons so you can't spam clicks
+                    disableNextPrevButtons();
+
                     var LAST_SLIDE_NUMBER = slider.find(opts.slide).size();
 
                     var pageControlSelector = opts.pagecontrol + ' .control.on';
 
                     // 10/4/12  the CSS is one-indexed right etc. etc.
-                    var currentSlideNumber = slider.find(pageControlSelector).index() + 1;
+                    var currentSlideNumber = slider.find(opts.slide + '.' + ACTIVE).index() + 1;
                     var nextSlideNumber;
 
                     // same as slideWidth, but as a string that can be
@@ -93,8 +105,8 @@
 
                     switch(direction) {
                         case LEFT:
-                            if(currentSlideNumber == FIRST_SLIDE_NUMBER) {
-//                                 console.log('global.js:251  at start of slides! not movin!  currentSlideNumber: ' + currentSlideNumber + '   FIRST_SLIDE_NUMBER: ' + FIRST_SLIDE_NUMBER);
+                            if(currentSlideNumber <= FIRST_SLIDE_NUMBER) {
+                                console.log('slidify.js:100  at start of slides!  currentSlideNumber: ' + currentSlideNumber + '   FIRST_SLIDE_NUMBER: ' + FIRST_SLIDE_NUMBER);
 
                                 if(opts.looped) {
                                     nextSlideNumber = LAST_SLIDE_NUMBER;
@@ -115,7 +127,7 @@
 
                         case RIGHT:
                             if(currentSlideNumber  >= LAST_SLIDE_NUMBER) {
-//                                 console.log('global.js:265  at end of slides! not movin!   currentSlideNumber: ' + currentSlideNumber + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER);
+                                console.log('slidify.js:121  at end of slides!   currentSlideNumber: ' + currentSlideNumber + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER);
 
                                 if(opts.looped) {
                                     nextSlideNumber = FIRST_SLIDE_NUMBER;
@@ -135,6 +147,7 @@
                             break;
 
                         default:
+                            console.log('slidify.js:151  doAnimate() wtf, shouldnt get to default block!');
                             return;
                     }
 
@@ -144,9 +157,9 @@
                     var currSlide  = slider.find(selectorCurrent);
                     var nextSlide  = slider.find(selectorNext);
 
-//                     console.log('global.js:315   currentSlideNumber: ' + currentSlideNumber + '   nextSlideNumber: ' + nextSlideNumber);
+                    console.log('slidify.js:150   currentSlideNumber: ' + currentSlideNumber + '   nextSlideNumber: ' + nextSlideNumber);
 
-//                     console.log('global.js:317      doAnimate() ' + direction + '   selectorCurrent: ' + selectorCurrent + '   selectorNext: ' + selectorNext + '    currSlide.size(): ' + currSlide.size() + '    nextSlide.size(): ' + nextSlide.size() + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER);
+                    console.log('slidify.js:152      doAnimate() ' + direction + '   selectorCurrent: ' + selectorCurrent + '   selectorNext: ' + selectorNext + '    currSlide.size(): ' + currSlide.size() + '    nextSlide.size(): ' + nextSlide.size() + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER);
 
 
                     // slide OUT the current slide and slide IN the new one
@@ -157,11 +170,22 @@
                     //
 
                     currSlide.animate(currSlideEnd, function() {
-                        $(this).removeClass('active');
+                        // since removing the ACTIVE class will make it disappear,
+                        // remove it *after* its slid out
+                        $(this).removeClass(ACTIVE);
+                        $(this).removeAttr('style');
                     });
 
-                    nextSlide.addClass('active').css(nextSlideStart).animate(
-                            nextSlideEnd);
+                    nextSlide.addClass(ACTIVE).css(nextSlideStart).animate(
+                        nextSlideEnd,
+                        function() {
+
+                            enableNextPrevButtons();
+
+                            opts.sliderChangedCallback(
+                                currentSlideNumber, nextSlideNumber);
+                        }
+                    );
 
                     // finally, the orange page control / bullet things
                     // should reflect the current slide we're on....!
@@ -177,6 +201,27 @@
                         $(this).removeClass('pressed');
                     }
                 }
+
+                function enableNextPrevButtons() {
+
+                    slider.find(opts.left).click(function() {
+                        console.log('slidify.js:208  Clicked left');
+                        doAnimate(LEFT);
+                    });
+                    slider.find(opts.right).click(function() {
+                        console.log('slidify.js:212  Clicked right');
+                        doAnimate(RIGHT);
+                    });
+                }
+
+                function disableNextPrevButtons() {
+                    slider.find([opts.left, opts.right].join(',')).unbind('click');
+                }
+
+                function makeSwipable() {
+                    // TODO: bind touch events!
+                }
+
             });
         }
     });

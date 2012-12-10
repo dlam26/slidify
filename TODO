@@ -1,0 +1,10 @@
+
+
+    1.  Add an option to be able to move a slide incrementally,
+        instead of all-the-way at the same time.
+
+        Then you could implement a slideshow thing where you hold
+        the mouse button to progress the slide (or something). Also,
+        you would be able to implement a design which calls for 
+        showing portions of slides, instead of the entire slide!
+

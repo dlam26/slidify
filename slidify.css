@@ -1,0 +1,17 @@
+.slidified {
+    position:relative;
+}
+.slidified .slide {
+    display:none;
+}
+.slidified .slide.active {
+    display:block;
+    position:absolute;
+}
+/*
+.slidified .slide.active + .slide {
+    display:block;
+    position:absolute;
+}
+*/
+

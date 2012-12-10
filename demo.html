@@ -1,0 +1,98 @@
+
+
+<html>
+
+    <head> 
+        <title> slidify.js demo! </title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script type="text/javascript" src="slidify.js"></script> 
+        <link href="slidify.css" rel="stylesheet"/>
+
+        <style type="text/css">
+
+            body {
+                margin: 50px 200px;
+            }
+
+            .slidified, .slide {
+                height: 500px; 
+                width: 800px;
+            }
+
+            .slides {
+                overflow:hidden;
+            }
+
+            .slide1 {
+                background-color:green;
+            }
+
+
+            .slide2 {
+                background-color:cornflowerblue;
+            }
+
+            .slide3 {
+                background-color:blue;
+            }
+
+            .slide4 {
+                background-color:red;
+            }
+
+            .slide5 {
+                background-color:yellow;
+            }
+
+            a {
+                color:blue;
+                text-decoration:underline;
+            }
+            a:hover {
+                cursor:pointer;
+            }
+        </style>
+
+        <script type="text/javascript">
+
+            $(document).ready(function() { 
+                $('.slidified').slidify();
+            });
+        </script>
+    </head>
+
+    <body>
+
+        <h1> here here: </h1> 
+
+        <h2>
+            <a style="float:right" onclick="location.reload(true)">reload</a>
+        </h2>
+
+        <div class="slidified">
+
+            <a class="slide_left">left</a> |
+            <a class="slide_right">right</a>
+
+
+            <div class="slides">
+
+                <div class="slide1 slide">
+                    <h1> AAA </h1>
+                </div>
+
+
+                <div class="slide2 slide">
+                    <h1> BBB </h1>
+                </div>
+
+                <div class="slide3 slide">
+                    <h1> CCCC </h1>
+                </div>
+            </div>
+
+        </div>
+
+    </body>
+
+</html>
