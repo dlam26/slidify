@@ -1,6 +1,11 @@
 // TODO:  rename left/right to prev/next etc.
 //          why?  the button that goes to the next slide might not
 //          not neccessarily be on the right!
+//
+//
+// NOTE:  doing event.preventDefault can disable the default browser behavior 
+//        of being able to pan around the page and pinch-to-zoom
+//
 
 (function($) {
     // see http://docs.jquery.com/Plugins/Authoring etc.
@@ -86,7 +91,9 @@
                 var leftArrow  = slider.find(opts.left);
                 var rightArrow = slider.find(opts.right);
 
-                function doAnimate(direction) {
+                function doAnimate(direction, doAnimateCallback) {
+
+                    doAnimateCallback = doAnimateCallback || function(){};
 
                     // disable the next/prev buttons so you can't spam clicks
                     disableNextPrevButtons();
@@ -202,12 +209,16 @@
                         nextSlideEnd,
                         function() {
 
+                            console.log('slidify.js:208  performing doAnimate callbacks...');
+
                             // ...because we disable it at the top of doAnimate
                             // to prevent next/prev click spam
                             enableNextPrevButtons();
 
                             opts.sliderChangedCallback(
                                 currentSlideNumber, nextSlideNumber);
+
+                            doAnimateCallback();
                         }
                     );
 
@@ -215,7 +226,6 @@
                     // should reflect the current slide we're on....!
                     var pageControls = slider.find(opts.pagecontrol + ' .control');
                     pageControls.removeClass('on').eq(nextSlideNumber - 1).addClass('on');
-
                 }
 
                 function toggleArrowPressed(e) {
@@ -268,10 +278,13 @@
 
                     sliderSlides.addEventListener('touchstart', function(e) {
 
-                        if(isChangingSlides)
-                            return;
-
                         console.log('----------------------------------------');
+
+                        if(isChangingSlides) {
+                            console.log('slidify.js:279  touchstart   already animating slides, so dont start another');
+                            return;
+                        }
+
 
                         // reset everything
                         startX = 0;
@@ -297,10 +310,18 @@
 
 //                         console.log('slidify.js:302   touchmove');
 
+                        if(IS_TOUCH_SIMPLE && isChangingSlides) {
+                            console.log('slidify.js:309  touchmove   already animating slides, so dont start another');
+                            return;
+                        }
+
+
                         endX = e.changedTouches[0].pageX;
                         endY = e.changedTouches[0].pageY;
                         deltaX = prevX - endX;
                         deltaY = prevY - endY;
+
+                        console.log('slidify.js:324  touchmove   deltaX: ' + deltaX + '   deltaY: ' + deltaY + '    endX: ' + endX + '    endY: ' + endY);
 
                         movedMoreVertically = Math.abs(deltaY) > Math.abs(deltaX);
 
@@ -308,6 +329,9 @@
                             // allow vertical panning to proceed as usual
                         }
                         else { 
+
+                            console.log('slidify.js:331  touchmove   user appeared to slide across slides, so preventDefault  Math.abs(deltaY): ' + Math.abs(deltaY) + '   Math.abs(deltaX): ' + Math.abs(deltaX));
+
                             // user has appeared to slide across the slides,
                             // so DONT scroll the screen in the mobile browser 
                             // as it'll make .animate()'s callback not-seem-to-fire
@@ -322,6 +346,11 @@
 
                     sliderSlides.addEventListener('touchend', function(e) {
 
+                        if(IS_TOUCH_SIMPLE && isChangingSlides) {
+                            console.log('slidify.js:333  touchend   already animating slides, so dont start another');
+                            return;
+                        }
+
                         var tapped = (endX === 0 && endY === 0);
 
                         console.log('slidify.js:326   touchend at ' + 
@@ -334,7 +363,6 @@
                             console.log('slidify.js:333  changing slides, dont do anythin');
                         }
                         else {
-                            e.preventDefault();
 
                             var changeX = endX - startX;
                             var changeY = endY - startY;
@@ -345,22 +373,32 @@
                             //
                             if( movedMoreVertically || changeX === 0) {
 
-                                console.log('slidify.js:341  movedMoreVertically, so no do stuff'); 
+                                console.log('slidify.js:341  movedMoreVertically, so allow panning'); 
                             }
                             else {
+
+                                e.preventDefault();
 
                                 console.log('slidify.js:357   touchend! change? ' +
                                         touchToString({ x:changeX, y:changeY }));
 
+                                var direction;
+
                                 if(swipedToTheLeft) {
 
                                     console.log('slidify.js:361  swiped left');
-                                    doAnimate(RIGHT);
+                                    direction = RIGHT;
                                 }
                                 else {
                                     console.log('slidify.js:367  swiped right');
-                                    doAnimate(LEFT);
+                                    direction = LEFT;
                                 }
+
+                                isChangingSlides = true;
+
+                                doAnimate(direction, function() {
+                                    isChangingSlides = false;
+                                });
                             }
                         }
 
