@@ -193,6 +193,7 @@
                             // remove it *after* its slid out
                             $(this).removeClass(ACTIVE);
                             $(this).removeAttr('style');
+
                         }
 
                     });
@@ -253,16 +254,7 @@
                          anything at all  (so you probably dont want this)
                     */ 
 
-                    var startX = 0;
-                    var startY = 0;
-                    var endX = 0;
-                    var endY = 0;
-
-                    var prevX = 0; 
-                    var prevY = 0;
-                    var deltaX = 0;
-                    var deltaY = 0;
-
+                    var startX, startY, endX, endY, prevX, prevY, deltaX, deltaY;
                     var movedMoreVertically = true;
                     var isChangingSlides = false;
 
@@ -281,8 +273,15 @@
 
                         console.log('----------------------------------------');
 
-                        resetSwipeState();
-
+                        // reset everything
+                        startX = 0;
+                        startY = 0;
+                        endX   = 0;
+                        endY   = 0;
+                        prevX  = 0;
+                        prevY  = 0;
+                        deltaX = 0;
+                        deltaY = 0;
 
                         var start = e.targetTouches[0];
 
@@ -295,6 +294,8 @@
                     }, false);
 
                     sliderSlides.addEventListener('touchmove', function(e) {
+
+//                         console.log('slidify.js:302   touchmove');
 
                         endX = e.changedTouches[0].pageX;
                         endY = e.changedTouches[0].pageY;
@@ -321,7 +322,7 @@
 
                     sliderSlides.addEventListener('touchend', function(e) {
 
-                        var tapped = endX === 0 && endY === 0;
+                        var tapped = (endX === 0 && endY === 0);
 
                         console.log('slidify.js:326   touchend at ' + 
                                       touchToString({ x: endX, y: endY }));
@@ -348,7 +349,7 @@
                             }
                             else {
 
-                                console.log('slidify.js:357 touchend! change? ' +
+                                console.log('slidify.js:357   touchend! change? ' +
                                         touchToString({ x:changeX, y:changeY }));
 
                                 if(swipedToTheLeft) {
@@ -366,20 +367,6 @@
                     }, false);
                 }
 
-                function resetSwipeState() {
-
-                    console.log('slidify.js:362   reset()!');
-
-                    // reset everything
-                    startX = 0;
-                    startY = 0;
-                    endX   = 0;
-                    endY   = 0;
-                    prevX  = 0;
-                    prevY  = 0;
-                    deltaX = 0;
-                    deltaY = 0;
-                }
 
                 function touchToString(t) {
                     return '( x:' + t.x + ', y:' + t.y + ' )';
