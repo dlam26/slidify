@@ -11,23 +11,22 @@
         <style type="text/css">
 
             body {
-                margin: 50px 200px;
+                margin: 50px 100px;
             }
-
+            .slidified {
+                overflow:hidden;
+            }
             .slidified, .slide {
                 height: 500px; 
                 width: 800px;
             }
-
             .slides {
-                overflow:hidden;
+                margin-top:50px;
             }
 
             .slide1 {
                 background-color:green;
             }
-
-
             .slide2 {
                 background-color:cornflowerblue;
             }
@@ -45,12 +44,20 @@
             }
 
             a {
+                cursor:pointer;
                 color:blue;
                 text-decoration:underline;
+                font-size:32px;
             }
-            a:hover {
-                cursor:pointer;
+
+            div.loren-ipsum {
+
             }
+
+            h1:hover {
+                color:red;
+            }
+
         </style>
 
         <script type="text/javascript">
@@ -65,20 +72,22 @@
 
         <h1> here here: </h1> 
 
-        <h2>
-            <a style="float:right" onclick="location.reload(true)">reload</a>
-        </h2>
+        <a style="float:right" onclick="location.reload(true)">reload</a>
 
         <div class="slidified">
 
-            <a class="slide_left">left</a> |
-            <a class="slide_right">right</a>
+
+            <center>
+                <a class="slide_left">left</a> 
+                &nbsp; | &nbsp;
+                <a class="slide_right">right</a>
 
 
             <div class="slides">
 
                 <div class="slide1 slide">
                     <h1> AAA </h1>
+                    <!-- <h1 onclick="alert('hai')"> AAA </h1> -->
                 </div>
 
 
@@ -92,6 +101,72 @@
             </div>
 
         </div>
+
+
+        <h1> a random lorem ipsum: </h1>
+        <pre>
+
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec
+            ipsum orci, eu ullamcorper sem. Suspendisse tincidunt convallis
+            iaculis. Cum sociis natoque penatibus et magnis dis parturient
+            montes, nascetur ridiculus mus. Mauris non risus elit. Nulla
+            tincidunt, quam vel ornare lacinia, diam sapien molestie tellus,
+            eget vulputate neque odio in ipsum. Duis elementum volutpat felis
+            sit amet volutpat. In pellentesque felis id urna euismod at
+            dignissim odio hendrerit. Duis ornare fringilla consectetur.
+            Nullam eget mauris lectus, eu consequat nisi. Aliquam erat
+            volutpat. Quisque quis nulla nulla, vel cursus enim. Pellentesque
+            consequat, nunc in sodales fringilla, justo lorem scelerisque
+            arcu, ac ullamcorper libero erat quis nunc. Maecenas scelerisque
+            nisi ut nulla rhoncus sed viverra nisl tincidunt.
+
+            Sed vitae arcu sit amet eros scelerisque commodo et eget felis.
+            Mauris cursus dui in mi sollicitudin venenatis. Quisque posuere
+            felis eget magna molestie sed consequat nulla tincidunt. Nulla
+            suscipit posuere posuere. Sed porta est at dolor congue eu semper
+            nunc iaculis. Cum sociis natoque penatibus et magnis dis parturient
+            montes, nascetur ridiculus mus. Maecenas libero magna, porttitor ut
+            dictum at, rhoncus vitae risus. Curabitur sit amet magna enim, quis
+            bibendum purus.
+
+            Aliquam at odio neque. Nam sit amet augue vel risus convallis
+            sodales placerat eu quam. Curabitur tellus dui, molestie at
+            tristique sit amet, volutpat rhoncus nisl. Ut eleifend pulvinar
+            dolor, at egestas eros adipiscing quis. Vestibulum ipsum purus,
+            faucibus at venenatis sit amet, pharetra nec diam. Nunc eu mauris
+            ut urna elementum auctor. Phasellus quis ante et erat venenatis
+            commodo. Nulla ultrices porta leo sit amet tempor. Duis dignissim
+            feugiat leo auctor aliquet. Vivamus quam sem, auctor ut imperdiet
+            et, varius nec dui. Donec porta sollicitudin justo, ac volutpat
+            lectus venenatis eget. Etiam tortor augue, egestas vel faucibus
+            tincidunt, mattis ac dui. Curabitur varius fringilla tortor, vitae
+            ultrices augue posuere quis. Etiam magna nulla, tincidunt quis
+            aliquam interdum, pulvinar tempor lectus. Integer rutrum leo nec
+            urna elementum ultricies.
+
+            Nulla massa dui, malesuada dapibus volutpat non, suscipit nec urna.
+            Pellentesque dignissim tempus metus, convallis feugiat velit
+            convallis eget. Integer lorem ligula, luctus vitae eleifend nec,
+            elementum ac libero. Sed ut ante eu nunc ultricies suscipit. Proin
+            sodales mattis augue, id luctus nisl consequat vel. Nam ante lorem,
+            cursus nec volutpat sit amet, tristique eget purus. In eget dui
+            nulla. Maecenas in eros diam, a vestibulum erat. Cras enim tellus,
+            pellentesque a egestas sit amet, mattis accumsan augue.
+
+            Maecenas interdum, diam a pharetra posuere, sem enim consectetur
+            velit, at porta arcu quam id massa. Sed posuere ornare sem, in
+            iaculis metus rutrum eget. In euismod dui quis ipsum fermentum
+            tempor. Ut arcu velit, fringilla a placerat sit amet, vulputate sed
+            est. Pellentesque in nisi eget eros faucibus vehicula eget sed sem.
+            Donec accumsan venenatis lobortis. Maecenas quis mi ante, eget
+            gravida ligula. Pellentesque nec erat est. Nam egestas tortor et
+            urna euismod id fringilla sapien dignissim. Pellentesque quis augue
+            vitae erat eleifend placerat at vel lorem. Morbi vitae erat
+            consectetur augue tristique euismod in nec ligula. Morbi interdum
+            consequat augue, molestie posuere nunc scelerisque eu. Donec ac
+            enim vitae odio bibendum tempus vitae nec velit. Suspendisse
+            accumsan sollicitudin tellus sit amet ullamcorper.
+        </pre>
 
     </body>
 
