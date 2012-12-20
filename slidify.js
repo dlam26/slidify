@@ -83,6 +83,7 @@
                 var LEFT  = 'left';
                 var RIGHT = 'right';
                 var IS_TOUCH_SIMPLE = opts.touch == TOUCH_SIMPLE;
+                var IS_TOUCH_NONE = opts.touch == TOUCH_NONE;
                 var IS_TOUCH_SLIDES_WITH_FINGER = opts.touch == TOUCH_SLIDES_WITH_FINGER;
 
                 // should be set to true somewhere if...
@@ -326,249 +327,255 @@
                         return;
                     }
 
-                    sliderSlides.addEventListener('touchstart', function(e) {
+                    if(!IS_TOUCH_NONE) {
 
-                        console.log('----------------------------------------');
+                        sliderSlides.addEventListener('touchstart', function(e) {
 
-                        if(IS_TOUCH_SIMPLE && animatingSlideChange) {
-                            console.log('slidify.js:279  touchstart   animatingSlideChange already, so dont start another');
-                            return;
-                        }
+                            console.log('----------------------------------------');
 
-                        var start = e.targetTouches[0];
-
-                        // reset everything
-                        startX = start.pageX;
-                        startY = start.pageY;
-                        endX   = 0;
-                        endY   = 0;
-                        prevX  = 0;
-                        prevY  = 0;
-                        deltaX = 0;
-                        deltaY = 0;
-
-                        windowScrollInitial = getWindowScroll();
-
-                        console.log('slidify.js:336  touchstart at ' + touchToString({ x: startX, y:startY }));
-
-                        if(IS_TOUCH_SLIDES_WITH_FINGER) {
-                            currSlide = slider.find(getSlideSelector(currSlideNum));
-                            prevSlide = slider.find(getSlideSelector(prevSlideNum));
-                            nextSlide = slider.find(getSlideSelector(nextSlideNum));
-
-                            // position the next and previous slides 
-                            // in preparation
-
-                            prevSlide.css('left', '-' + SLIDE_WIDTH_PIXELS);
-                            nextSlide.css('left', SLIDE_WIDTH_PIXELS);
-
-//                             prevSlide.addClass('active');
-//                             nextSlide.addClass('active');
-                        }
-
-                    }, false);
-
-
-                    sliderSlides.addEventListener('touchmove', function(e) {
-
-//                         console.log('slidify.js:302   touchmove');
-
-                        endX = e.changedTouches[0].pageX;
-                        endY = e.changedTouches[0].pageY;
-                        prevX = prevX || endX;
-                        prevY = prevY || endY;
-                        deltaX = prevX - endX;
-                        deltaY = prevY - endY;
-
-                        if(deltaX === 0 && deltaY === 0) {
-                            movedMoreVertically = true;
-                        }
-                        else {
-                            movedMoreVertically = Math.abs(deltaY) > Math.abs(deltaX);
-                        }
-
-                        var windowScroll = getWindowScroll();
-
-
-                        console.log('slidify.js:353  touchmove   deltaX: ' + deltaX + '   deltaY: ' + deltaY + '   diff: ' + (Math.abs(deltaY) - Math.abs(deltaX)) + '    windowScroll: ' + windowScroll);
-
-                        var swipedLeft = deltaX > 0;
-
-
-                        if(IS_TOUCH_SLIDES_WITH_FINGER) {
-
-                            var shift = parseInt(currSlide.css('left'), 10) - deltaX;
-                            currSlide.css('left', shift);
-
-//                             console.log('slidify.js:370   currSlide.css("left"): ' + currSlide.css("left"));
-
-                            /*
-                            if(swipedLeft) {
-                                // shift the current slide out to the left 
-                                // and shift the next slide in from the left
-
-                                var leftShift = parseInt(nextSlide.css('left'), 10) + deltaX;
-                                nextSlide.css('left', leftShift);
-
+                            if(IS_TOUCH_SIMPLE && animatingSlideChange) {
+                                console.log('slidify.js:279  touchstart   animatingSlideChange already, so dont start another');
+                                return;
                             }
-                            else { 
-                                var rightShift = parseInt(prevSlide.css('left'), 10) + deltaX;
-                                prevSlide.css('left', rightShift);
+
+                            var start = e.targetTouches[0];
+
+                            // reset everything
+                            startX = start.pageX;
+                            startY = start.pageY;
+                            endX   = 0;
+                            endY   = 0;
+                            prevX  = 0;
+                            prevY  = 0;
+                            deltaX = 0;
+                            deltaY = 0;
+
+                            windowScrollInitial = getWindowScroll();
+
+                            console.log('slidify.js:336  touchstart at ' + touchToString({ x: startX, y:startY }));
+
+                            if(IS_TOUCH_SLIDES_WITH_FINGER) {
+                                currSlide = slider.find(getSlideSelector(currSlideNum));
+                                prevSlide = slider.find(getSlideSelector(prevSlideNum));
+                                nextSlide = slider.find(getSlideSelector(nextSlideNum));
+
+                                // position the next and previous slides 
+                                // in preparation
+
+                                prevSlide.css('left', '-' + SLIDE_WIDTH_PIXELS);
+                                nextSlide.css('left', SLIDE_WIDTH_PIXELS);
+
+    //                             prevSlide.addClass('active');
+    //                             nextSlide.addClass('active');
                             }
-                            */
 
-                        }
-                        else {
-                            //if(IS_TOUCH_SIMPLE) {
-
-//                             if(animatingSlideChange) {
-//                                 console.log('slidify.js:309  touchmove   already animating slides, so dont start another');
-//                                 return;
-//                             }
+                        }, false);
 
 
-                            if(movedMoreVertically || animatingSlideChange) {
-                                // allow vertical panning to proceed as usual
-                                var byNotPuttingPreventDefaultHere;
+                        sliderSlides.addEventListener('touchmove', function(e) {
+
+    //                         console.log('slidify.js:302   touchmove');
+
+                            endX = e.changedTouches[0].pageX;
+                            endY = e.changedTouches[0].pageY;
+                            prevX = prevX || endX;
+                            prevY = prevY || endY;
+                            deltaX = prevX - endX;
+                            deltaY = prevY - endY;
+
+                            if(deltaX === 0 && deltaY === 0) {
+                                movedMoreVertically = true;
                             }
                             else {
-
-//                                 console.log('slidify.js:331  touchmove   user appeared to slide across slides, so preventDefault  Math.abs(deltaY): ' + Math.abs(deltaY) + '   Math.abs(deltaX): ' + Math.abs(deltaX));
-
-                                // user has appeared to slide across the slides,
-                                // so DONT scroll the screen in the mobile browser 
-                                // as it'll make .animate()'s callback not-seem-to-fire
-                                e.preventDefault();
+                                movedMoreVertically = Math.abs(deltaY) > Math.abs(deltaX);
                             }
 
-                        }
-
-                        prevX = endX;
-                        prevY = endY;
-
-                    }, false);
+                            var windowScroll = getWindowScroll();
 
 
-                    sliderSlides.addEventListener('touchend', function(e) {
+                            console.log('slidify.js:353  touchmove   deltaX: ' + deltaX + '   deltaY: ' + deltaY + '   diff: ' + (Math.abs(deltaY) - Math.abs(deltaX)) + '    windowScroll: ' + windowScroll);
 
-                        if(IS_TOUCH_SIMPLE && animatingSlideChange) {
-                            console.log('slidify.js:333  touchend   animatingSlideChange slides, so dont start another');
-                            return;
-                        }
+                            var swipedLeft = deltaX > 0;
 
-                        // calculate end state
-                        var tapped = (endX === 0 && endY === 0);
-                        var changeX = endX - startX;
-                        var changeY = endY - startY;
-                        var swipedToTheLeft = changeX < 0;
-
-                        //   maybe shouldnt be here, as I copied it from touchmove
-                        movedMoreVertically = Math.abs(changeX) < Math.abs(changeY);
-
-                        // XXX  arg, if you pan to switch slides and it 
-                        //      scrolls the screen, the callback for the 
-                        //      currSlide.animate call  wont be called!!!1
-                        //
-//                         movedMoreVertically = movedMoreVertically || Math.abs(changeX -changeY) < 70;
-
-                        console.log('slidify.js:326  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY})
-                        );
-
-                        if(tapped) {
-                            console.log('slidify.js:330  just did a tap, so not doin anythin');
-                        }
-                        else if(animatingSlideChange) {
-                            console.log('slidify.js:333  changing slides, dont do anythin');
-                        }
-                        else {
 
                             if(IS_TOUCH_SLIDES_WITH_FINGER) {
 
-                                // retract or complete a slide change 
-                                // past a given threshold
+                                var shift = parseInt(currSlide.css('left'), 10) - deltaX;
+                                currSlide.css('left', shift);
 
+    //                             console.log('slidify.js:370   currSlide.css("left"): ' + currSlide.css("left"));
 
-                                var threshold = SLIDE_WIDTH / 3.0;
-                                var thresholdShift;
+                                /*
+                                if(swipedLeft) {
+                                    // shift the current slide out to the left 
+                                    // and shift the next slide in from the left
 
-                                if(Math.abs(changeX) > threshold) { 
-                                    // then perform the full slide change
-                                    thresholdShift = SLIDE_WIDTH_PIXELS;
+                                    var leftShift = parseInt(nextSlide.css('left'), 10) + deltaX;
+                                    nextSlide.css('left', leftShift);
+
                                 }
-                                else {
-                                    // otherwise retract 
-                                    thresholdShift = '0px';
+                                else { 
+                                    var rightShift = parseInt(prevSlide.css('left'), 10) + deltaX;
+                                    prevSlide.css('left', rightShift);
                                 }
+                                */
 
-
-                                console.log('slidify.js:453  check threshold    changeX: ' + changeX + '    SLIDE_WIDTH / 2.0: ' + SLIDE_WIDTH / 2.0 + '    thresholdShift: ' + thresholdShift + '    currSlide left: ' + currSlide.css('left'));
-
-                                slider.find(getSlideSelector(currSlideNum)).animate( 
-                                    { 'left': thresholdShift }, 
-                                    {
-                                        complete: function() {
-
-                                            console.log('slidify.js:484  threshold retract!');
-                                        }
-                                    }
-                                );
                             }
                             else {
-                                // TOUCH_SIMPLE
+                                //if(IS_TOUCH_SIMPLE) {
 
-                                // don't do anything if the user panned more vertically
-                                // than horizontally, because that'll seem weird
-                                //
-                                if( movedMoreVertically || changeX === 0) {
+    //                             if(animatingSlideChange) {
+    //                                 console.log('slidify.js:309  touchmove   already animating slides, so dont start another');
+    //                                 return;
+    //                             }
 
-                                    console.log('slidify.js:518  touchend   movedMoreVertically, so allow panning     Math.abs(changeX): ' + Math.abs(changeX) + '  <  Math.abs(changeY): ' + Math.abs(changeY)); 
-                                }
-                                else if(windowScrollInitial != getWindowScroll()) {
 
-                                    // FIXME TODO XXX HACK -  it feels like 
-                                    // there's gotta be a better solution 
-                                    // for this hmm...
-
-                                    console.log('slidify.js:527  touchend   window scrolled/panned, do not do animation as the jQuery animate callback won\'t fire for some weird reason...   initial: ' + windowScrollInitial + '    curr: ' + getWindowScroll());
-
-                                }
-                                else if(windowScrollInitial === 0 && changeY > changeX && changeY > 30) {
-
-                                    // FIXME TODO
-
-                                    console.log('slidify.js:539  touchend  hack fix for no jquery animate callback when the window scrolls whiling changing slides  ...at the very top of a page   changeY: ' + changeY +  '    changeX: ' + changeX );
+                                if(movedMoreVertically || animatingSlideChange) {
+                                    // allow vertical panning to proceed as usual
+                                    var byNotPuttingPreventDefaultHere;
                                 }
                                 else {
-                                    // perform the swipe and slide change
-                                    
-                                    e.preventDefault();   // disable panning
 
-                                    var direction;        // figure out where to go
+    //                                 console.log('slidify.js:331  touchmove   user appeared to slide across slides, so preventDefault  Math.abs(deltaY): ' + Math.abs(deltaY) + '   Math.abs(deltaX): ' + Math.abs(deltaX));
 
-                                    if(swipedToTheLeft) {
-                                        console.log('slidify.js:361  touchend  swiped left');
-                                        direction = RIGHT;
+                                    // user has appeared to slide across the slides,
+                                    // so DONT scroll the screen in the mobile browser 
+                                    // as it'll make .animate()'s callback not-seem-to-fire
+                                    e.preventDefault();
+                                }
+
+                            }
+
+                            prevX = endX;
+                            prevY = endY;
+
+                        }, false);
+
+
+                        sliderSlides.addEventListener('touchend', function(e) {
+
+                            if(IS_TOUCH_SIMPLE && animatingSlideChange) {
+                                console.log('slidify.js:333  touchend   animatingSlideChange slides, so dont start another');
+                                return;
+                            }
+
+                            // calculate end state
+                            var tapped = (endX === 0 && endY === 0);
+                            var changeX = endX - startX;
+                            var changeY = endY - startY;
+                            var swipedToTheLeft = changeX < 0;
+
+                            //   maybe shouldnt be here, as I copied it from touchmove
+                            movedMoreVertically = Math.abs(changeX) < Math.abs(changeY);
+
+                            // XXX  arg, if you pan to switch slides and it 
+                            //      scrolls the screen, the callback for the 
+                            //      currSlide.animate call  wont be called!!!1
+                            //
+    //                         movedMoreVertically = movedMoreVertically || Math.abs(changeX -changeY) < 70;
+
+                            console.log('slidify.js:326  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY})
+                            );
+
+                            if(tapped) {
+                                console.log('slidify.js:330  just did a tap, so not doin anythin');
+                            }
+                            else if(animatingSlideChange) {
+                                console.log('slidify.js:333  changing slides, dont do anythin');
+                            }
+                            else {
+
+                                if(IS_TOUCH_SLIDES_WITH_FINGER) {
+
+                                    // retract or complete a slide change 
+                                    // past a given threshold
+
+
+                                    var threshold = SLIDE_WIDTH / 3.0;
+                                    var thresholdShift;
+
+                                    if(Math.abs(changeX) > threshold) { 
+                                        // then perform the full slide change
+                                        thresholdShift = SLIDE_WIDTH_PIXELS;
                                     }
                                     else {
-                                        console.log('slidify.js:367  touchend  swiped right');
-                                        direction = LEFT;
+                                        // otherwise retract 
+                                        thresholdShift = '0px';
                                     }
 
-                                    //  animate the slide change, and disable 
-                                    //  additional swipes while the animation
-                                    //  is still going
-                                    //
-                                    animatingSlideChange = true;
 
-                                    doAnimate(direction, function() {
-                                        animatingSlideChange = false;
-                                    });
+                                    console.log('slidify.js:453  check threshold    changeX: ' + changeX + '    SLIDE_WIDTH / 2.0: ' + SLIDE_WIDTH / 2.0 + '    thresholdShift: ' + thresholdShift + '    currSlide left: ' + currSlide.css('left'));
+
+                                    slider.find(getSlideSelector(currSlideNum)).animate( 
+                                        { 'left': thresholdShift }, 
+                                        {
+                                            complete: function() {
+
+                                                console.log('slidify.js:484  threshold retract!');
+                                            }
+                                        }
+                                    );
+                                }
+                                else {
+                                    // TOUCH_SIMPLE
+
+                                    // don't do anything if the user panned more vertically
+                                    // than horizontally, because that'll seem weird
+                                    //
+                                    if( movedMoreVertically || changeX === 0) {
+
+                                        console.log('slidify.js:518  touchend   movedMoreVertically, so allow panning     Math.abs(changeX): ' + Math.abs(changeX) + '  <  Math.abs(changeY): ' + Math.abs(changeY)); 
+                                    }
+                                    else if(windowScrollInitial != getWindowScroll()) {
+
+                                        // FIXME TODO XXX HACK -  it feels like 
+                                        // there's gotta be a better solution 
+                                        // for this hmm...
+
+                                        console.log('slidify.js:527  touchend   window scrolled/panned, do not do animation as the jQuery animate callback won\'t fire for some weird reason...   initial: ' + windowScrollInitial + '    curr: ' + getWindowScroll());
+
+                                    }
+                                    else if(windowScrollInitial === 0 && changeY > changeX && changeY > 30) {
+
+                                        // FIXME TODO
+
+                                        console.log('slidify.js:539  touchend  hack fix for no jquery animate callback when the window scrolls whiling changing slides  ...at the very top of a page   changeY: ' + changeY +  '    changeX: ' + changeX );
+                                    }
+                                    else {
+                                        // perform the swipe and slide change
+                                        
+                                        e.preventDefault();   // disable panning
+
+                                        var direction;        // figure out where to go
+
+                                        if(swipedToTheLeft) {
+                                            console.log('slidify.js:361  touchend  swiped left');
+                                            direction = RIGHT;
+                                        }
+                                        else {
+                                            console.log('slidify.js:367  touchend  swiped right');
+                                            direction = LEFT;
+                                        }
+
+                                        //  animate the slide change, and disable 
+                                        //  additional swipes while the animation
+                                        //  is still going
+                                        //
+                                        animatingSlideChange = true;
+
+                                        doAnimate(direction, function() {
+                                            animatingSlideChange = false;
+                                        });
+                                    }
                                 }
                             }
-                        }
 
-                    }, false);
-                }
+                        }, false);
+
+                    } //   if(!IS_TOUCH_NONE) {
+
+
+                } // makeSwipable() end
 
 
                 function touchToString(t) {
