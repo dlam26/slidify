@@ -3,10 +3,12 @@
 }
 .slidified .slide {
     display:none;
+    left:0px;
 }
 .slidified .slide.active {
     display:block;
     position:absolute;
+    left:0px;
 }
 /*
 .slidified .slide.active + .slide {

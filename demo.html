@@ -4,7 +4,10 @@
 
     <head> 
         <title> slidify.js demo! </title>
+        <!--
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        -->
+        <script type="text/javascript" src="jquery-1.8.3.js"></script> 
         <script type="text/javascript" src="slidify.js"></script> 
         <link href="slidify.css" rel="stylesheet"/>
 
@@ -36,18 +39,22 @@
             }
 
             .slide4 {
-                background-color:red;
+                background-color:yellow;
             }
 
             .slide5 {
-                background-color:yellow;
+                background-color:red;
+            }
+
+            div.page_control {
+                text-align:center;
             }
 
             a {
                 cursor:pointer;
                 color:blue;
-                text-decoration:underline;
-                font-size:32px;
+                text-decoration:none;
+                font-size:64px;
             }
 
             div.loren-ipsum {
@@ -64,6 +71,7 @@
 
             $(document).ready(function() { 
                 $('.slidified').slidify();
+//              $('.slidified').slidify({'touch':'slides-with-finger'});
             });
         </script>
     </head>
@@ -74,11 +82,11 @@
 
         <div class="slidified">
 
-
-            <center>
+            <div class="page_control">
                 <a class="slide_left">left</a> 
                 &nbsp; | &nbsp;
                 <a class="slide_right">right</a>
+            </div>
 
 
             <div class="slides">
@@ -107,6 +115,10 @@
                 <div class="slide3 slide">
                     <h2> I got nothing =( </h2>
                     <div class="page">Page 3</div>
+                </div>
+
+                <div class="slide4 slide">
+                    <div class="page">Page 4</div>
                 </div>
             </div>
 
@@ -177,6 +189,50 @@
             enim vitae odio bibendum tempus vitae nec velit. Suspendisse
             accumsan sollicitudin tellus sit amet ullamcorper.
         </pre>
+
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+        <div class="slidified">
+
+            <div class="page_control">
+                <a class="slide_left">left</a> 
+                &nbsp; | &nbsp;
+                <a class="slide_right">right</a>
+            </div>
+
+
+            <div class="slides">
+
+                <div class="slide1 slide">
+                    <h1> I have a CSS hover state! </h1>
+                    <div class="page">Page 1</div>
+                </div>
+
+
+                <div class="slide2 slide">
+
+                    <h1 onclick="alert('hai')"> 
+                        I have a CSS hover state and onclick alert! 
+                    </h1>
+
+                    <div class="page">Page 2</div>
+
+                    <br/>
+                    <br/>
+
+                    <a href="http://dlam.me">http://dlam.me</a>  
+                </div>
+
+                <div class="slide3 slide">
+                    <h2> I got nothing =( </h2>
+                    <div class="page">Page 3</div>
+                </div>
+            </div>
+
+        </div>
 
     </body>
 

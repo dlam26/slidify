@@ -8,3 +8,14 @@
         you would be able to implement a design which calls for 
         showing portions of slides, instead of the entire slide!
 
+
+
+    2.  BUG   On iOS, if the window is currently being scrolled/panned
+              the `complete` callbacks on calls to .animate() 
+              MAY NOT RUN for some weird reason
+
+
+    3.  rename left/right to prev/next etc.
+         why?  the button that goes to the next slide might not
+         not neccessarily be on the right! etc etc
+
