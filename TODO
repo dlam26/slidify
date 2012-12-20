@@ -12,7 +12,20 @@
 
     2.  BUG   On iOS, if the window is currently being scrolled/panned
               the `complete` callbacks on calls to .animate() 
-              MAY NOT RUN for some weird reason
+              MAY NOT RUN for some weird reason!
+
+            when you inspect element, there's multiple slides with an 'active';
+            class hmmmm
+
+            <div class="slidified">
+                ...
+                <div class="slides">
+                    <div class="slide1 slide active" style="left: 0px; ">
+                    <div class="slide2 slide"></div>
+                    <div class="slide3 slide active" style="left: -800px; "></div>
+                </div>
+            </div>
+
 
 
     3.  rename left/right to prev/next etc.

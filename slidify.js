@@ -1,7 +1,8 @@
-// TODO:  rename left/right to prev/next etc.
-//          why?  the button that goes to the next slide might not
-//          not neccessarily be on the right!
+//  
+//   slidify.js
 //
+
+
 //
 // NOTE:  doing event.preventDefault can disable the default browser behavior 
 //        of being able to pan around the page and pinch-to-zoom
@@ -224,8 +225,8 @@
                             // to prevent next/prev click spam
                             enableNextPrevButtons();
 
-//                             opts.sliderChangedCallback(
-//                                 currSlideNum, nextSlideNum);
+                            opts.sliderChangedCallback(
+                                currSlideNum, nextSlideNum);
 
                             doAnimateCallback();
                         }
@@ -470,9 +471,7 @@
                         //
 //                         movedMoreVertically = movedMoreVertically || Math.abs(changeX -changeY) < 70;
 
-                        console.log('slidify.js:326  touchend at ' + 
-                          touchToString({ x:endX, y:endY }) +
-                          '  change: ' + touchToString({ x:changeX, y:changeY})
+                        console.log('slidify.js:326  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY})
                         );
 
                         if(tapped) {
@@ -524,14 +523,20 @@
 
                                     console.log('slidify.js:518  touchend   movedMoreVertically, so allow panning     Math.abs(changeX): ' + Math.abs(changeX) + '  <  Math.abs(changeY): ' + Math.abs(changeY)); 
                                 }
-                                else if(windowScrollInitial != getWindowScroll()
-                                        || windowScrollInitial == 0 && changeY > 0) {
+                                else if(windowScrollInitial != getWindowScroll()) {
 
-                                    // XXX HACK -  it feels like there's gotta be
-                                    //     a better solution for this hmm...
+                                    // FIXME TODO XXX HACK -  it feels like 
+                                    // there's gotta be a better solution 
+                                    // for this hmm...
 
                                     console.log('slidify.js:527  touchend   window scrolled/panned, do not do animation as the jQuery animate callback won\'t fire for some weird reason...   initial: ' + windowScrollInitial + '    curr: ' + getWindowScroll());
 
+                                }
+                                else if(windowScrollInitial === 0 && changeY > changeX && changeY > 30) {
+
+                                    // FIXME TODO
+
+                                    console.log('slidify.js:539  touchend  hack fix for no jquery animate callback when the window scrolls whiling changing slides  ...at the very top of a page   changeY: ' + changeY +  '    changeX: ' + changeX );
                                 }
                                 else {
                                     // perform the swipe and slide change
@@ -580,5 +585,3 @@
     });
 
 })( jQuery );
-
-
