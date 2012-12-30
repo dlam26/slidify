@@ -5,13 +5,13 @@
 
         Then you could implement a slideshow thing where you hold
         the mouse button to progress the slide (or something). Also,
-        you would be able to implement a design which calls for 
+        you would be able to implement a design which calls for
         showing portions of slides, instead of the entire slide!
 
 
 
     2.  BUG   On iOS, if the window is currently being scrolled/panned
-              the `complete` callbacks on calls to .animate() 
+              the `complete` callbacks on calls to .animate()
               MAY NOT RUN for some weird reason!
 
             when you inspect element, there's multiple slides with an 'active';
@@ -31,4 +31,12 @@
     3.  rename left/right to prev/next etc.
          why?  the button that goes to the next slide might not
          not neccessarily be on the right! etc etc
+
+
+    4.  check the velocity of a touch event,  if it's really high
+        then perform the slide change even if we didnt pass the threshold
+
+
+    5.  if the user is pinching to zoom in (count of touches is more than one?),
+        than the slider shouldnt move!
 

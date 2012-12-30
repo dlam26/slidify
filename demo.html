@@ -2,13 +2,13 @@
 
 <html>
 
-    <head> 
+    <head>
         <title> slidify.js demo! </title>
         <!--
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
         -->
-        <script type="text/javascript" src="jquery-1.8.3.js"></script> 
-        <script type="text/javascript" src="slidify.js"></script> 
+        <script type="text/javascript" src="jquery-1.8.3.js"></script>
+        <script type="text/javascript" src="slidify.js"></script>
         <link href="slidify.css" rel="stylesheet"/>
 
         <style type="text/css">
@@ -20,7 +20,7 @@
                 overflow:hidden;
             }
             .slidified, .slide {
-                height: 500px; 
+                height: 500px;
                 width: 800px;
             }
             .slides {
@@ -69,10 +69,17 @@
 
         <script type="text/javascript">
 
-            $(document).ready(function() { 
-//            $('.slidified').slidify();
-//            $('.slidified').slidify({'touch':'slides-with-finger'});
-              $('.slidified').slidify({'touch':'none'});
+            var DURATION = 400;
+
+            $(document).ready(function() {
+//              $('.slidified').slidify();
+//              $('.slidified').slidify({ duration: DURATION });
+//              $('.slidified').slidify({ 'touch':'slides-with-finger' });
+                $('.slidified').slidify({ 'touch':'slides-with-finger', 'duration':DURATION });
+
+
+
+//              $('.slidified').slidify({'touch':'none'});
             });
         </script>
     </head>
@@ -84,7 +91,7 @@
         <div class="slidified">
 
             <div class="page_control">
-                <a class="slide_left">left</a> 
+                <a class="slide_left">left</a>
                 &nbsp; | &nbsp;
                 <a class="slide_right">right</a>
             </div>
@@ -100,8 +107,8 @@
 
                 <div class="slide2 slide">
 
-                    <h1 onclick="alert('hai')"> 
-                        I have a CSS hover state and onclick alert! 
+                    <h1 onclick="alert('hai')">
+                        I have a CSS hover state and onclick alert!
                     </h1>
 
                     <div class="page">Page 2</div>
@@ -109,7 +116,7 @@
                     <br/>
                     <br/>
 
-                    <a href="http://dlam.me">http://dlam.me</a>  
+                    <a href="http://dlam.me">http://dlam.me</a>
                     ( &lt;-- this is a regular link )
                 </div>
 
@@ -199,7 +206,7 @@
         <div class="slidified">
 
             <div class="page_control">
-                <a class="slide_left">left</a> 
+                <a class="slide_left">left</a>
                 &nbsp; | &nbsp;
                 <a class="slide_right">right</a>
             </div>
@@ -215,8 +222,8 @@
 
                 <div class="slide2 slide">
 
-                    <h1 onclick="alert('hai')"> 
-                        I have a CSS hover state and onclick alert! 
+                    <h1 onclick="alert('hai')">
+                        I have a CSS hover state and onclick alert!
                     </h1>
 
                     <div class="page">Page 2</div>
@@ -224,7 +231,7 @@
                     <br/>
                     <br/>
 
-                    <a href="http://dlam.me">http://dlam.me</a>  
+                    <a href="http://dlam.me">http://dlam.me</a>
                 </div>
 
                 <div class="slide3 slide">
