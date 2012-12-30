@@ -91,10 +91,10 @@
                 //     2.  we're on the first slide and the left arrow is pressed
                 var willLoopAround = false;
 
-                var currSlideNum, prevSlideNum, nextSlideNum;
-                var currSlide, prevSlide, nextSlide;  // for TOUCH_SLIDES_WITH_FINGER
+                var currSlideNum, slideOnLeftNum, slideOnRightNum;
+                var currSlide, nextSlide, slideOnLeft, slideOnRight;
 
-                enableNextPrevButtons();
+                enableSlidePageControlButtons();
                 makeSwipable();
                 setSlideNumbers();
 
@@ -137,14 +137,14 @@
                                 console.log('slidify.js:120  at start of slides!  currSlideNum: ' + currSlideNum + '   FIRST_SLIDE_NUMBER: ' + FIRST_SLIDE_NUMBER);
 
                                 if(opts.looped) {
-                                    nextSlideNum = LAST_SLIDE_NUMBER;
+                                    slideOnRightNum = LAST_SLIDE_NUMBER;
                                 }
                                 else {
-                                    return;   // don't loop, so stop right away!
+                                    return;   // XXX  don't loop, so stop right away!
                                 }
                             }
                             else {
-                                nextSlideNum = currSlideNum - 1;
+                                slideOnRightNum = currSlideNum - 1;
                             }
 
                             // this moves the slides left
@@ -159,14 +159,14 @@
                                 console.log('slidify.js:121  at end of slides!   currSlideNum: ' + currSlideNum + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER);
 
                                 if(opts.looped) {
-                                    nextSlideNum = FIRST_SLIDE_NUMBER;
+                                    slideOnRightNum = FIRST_SLIDE_NUMBER;
                                 }
                                 else {
-                                    return;
+                                    return;  // XXX
                                 }
                             }
                             else {
-                                nextSlideNum = currSlideNum + 1;
+                                slideOnRightNum = currSlideNum + 1;
                             }
 
                             // ...and this moves the slides right!
@@ -183,12 +183,12 @@
 
                     // build the class selector for the next slide
                     var selectorCurrent = getSlideSelector(currSlideNum);
-                    var selectorNext = getSlideSelector(nextSlideNum);
+                    var selectorNext = getSlideSelector(slideOnRightNum);
                     var currSlide  = slider.find(selectorCurrent);
-                    var nextSlide  = slider.find(selectorNext);
+                    var slideOnRight  = slider.find(selectorNext);
 
 
-                    console.log('slidify.js:152  doAnimate() ' + direction + '   selectorCurrent: ' + selectorCurrent + '   selectorNext: ' + selectorNext + '    currSlideEnd.left: ' + currSlideEnd.left + '    nextSlideEnd.left: ' + nextSlideEnd.left + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER + '   currSlideNum: ' + currSlideNum + '   nextSlideNum: ' + nextSlideNum + '   currSlide.size(): ' + currSlide.size() + '   nextSlide.size(): ' + nextSlide.size());
+                    console.log('slidify.js:152  doAnimate() ' + direction + '   selectorCurrent: ' + selectorCurrent + '   selectorNext: ' + selectorNext + '    currSlideEnd.left: ' + currSlideEnd.left + '    nextSlideEnd.left: ' + nextSlideEnd.left + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER + '   currSlideNum: ' + currSlideNum + '   slideOnRightNum: ' + slideOnRightNum + '   currSlide.size(): ' + currSlide.size() + '   slideOnRight.size(): ' + slideOnRight.size());
 
 
                     // slide OUT the current slide and slide IN the new one
@@ -212,7 +212,7 @@
 
                     });
 
-                    nextSlide.addClass(ACTIVE).css(nextSlideStart).animate(nextSlideEnd, {
+                    slideOnRight.addClass(ACTIVE).css(nextSlideStart).animate(nextSlideEnd, {
 
                         complete: function() {
 
@@ -220,14 +220,13 @@
                             //       the page such that the slider goes off the screen,
                             //       these (important) callbacks might not run!
 
-                            console.log('slidify.js:220  doAnimate()  nextSlide.animate callback!  cleaning up slider state...');
+                            console.log('slidify.js:220  doAnimate()  slideOnRight.animate callback!  cleaning up slider state...');
 
                             // ...because we disable it at the top of doAnimate
                             // to prevent next/prev click spam
-                            enableNextPrevButtons();
+                            enableSlidePageControlButtons();
 
-                            opts.sliderChangedCallback(
-                                currSlideNum, nextSlideNum);
+                            opts.sliderChangedCallback(currSlideNum, slideOnRightNum);
 
                             doAnimateCallback();
                         }
@@ -236,9 +235,9 @@
                     // finally, the orange page control / bullet things
                     // should reflect the current slide we're on....!
                     var pageControls = slider.find(opts.pagecontrol + ' .control');
-                    pageControls.removeClass('on').eq(nextSlideNum - 1).addClass('on');
+                    pageControls.removeClass('on').eq(slideOnRightNum - 1).addClass('on');
 
-                    setSlideNumbers(nextSlideNum);
+                    setSlideNumbers(slideOnRightNum);
 
                     console.log('slidify.js:241  doAnimate()  finished!  currSlideNum: ' + currSlideNum);
 
@@ -257,30 +256,30 @@
                 //      1.  first slidify initialization
                 //      2.  after a slide change is completed  (in doAnimate)
                 //
-                function setSlideNumbers(withCurrentSlideNumber) {
+                function setSlideNumbers(withNewCurrentSlideNumber) {
 
-                    if(withCurrentSlideNumber)
-                        currSlideNum = withCurrentSlideNumber;
+                    if(withNewCurrentSlideNumber)
+                        currSlideNum = withNewCurrentSlideNumber;
 
                     if(!currSlideNum) {
                         currSlideNum = 1;
-                        nextSlideNum = currSlideNum + 1;
-                        prevSlideNum = LAST_SLIDE_NUMBER;
+                        slideOnRightNum = currSlideNum + 1;
+                        slideOnLeftNum = LAST_SLIDE_NUMBER;
                     }
                     else if(currSlideNum == LAST_SLIDE_NUMBER) {
-                        nextSlideNum = 1;
-                        prevSlideNum = LAST_SLIDE_NUMBER - 1;
+                        slideOnRightNum = 1;
+                        slideOnLeftNum = LAST_SLIDE_NUMBER - 1;
                     }
                     else {
-                        nextSlideNum = currSlideNum + 1;
-                        prevSlideNum = currSlideNum - 1;
+                        slideOnRightNum = currSlideNum + 1;
+                        slideOnLeftNum = currSlideNum - 1;
                     }
 
-                    console.log('slidify.js:256  setSlideNumbers()   prev: ' + prevSlideNum + '   curr: ' + currSlideNum + '   next: ' + nextSlideNum);
+                    console.log('slidify.js:256  setSlideNumbers()   left: ' + slideOnLeftNum + '   curr: ' + currSlideNum + '   right: ' + slideOnRightNum);
 
                 }
 
-                function enableNextPrevButtons() {
+                function enableSlidePageControlButtons() {
 
                     slider.find(opts.left).click(function() {
                         console.log('slidify.js:208  Clicked left');
@@ -352,29 +351,29 @@
 
                             windowScrollInitial = getWindowScroll();
 
-                            console.log('slidify.js:336  touchstart at ' + touchToString({ x: startX, y:startY }));
+                            console.log('slidify.js:336  touchstart  at ' + touchToString({ x: startX, y:startY }) + '  currSlideNum: ' + currSlideNum);
 
                             if(IS_TOUCH_SLIDES_WITH_FINGER) {
                                 currSlide = slider.find(getSlideSelector(currSlideNum));
-                                prevSlide = slider.find(getSlideSelector(prevSlideNum));
-                                nextSlide = slider.find(getSlideSelector(nextSlideNum));
+                                slideOnLeft = slider.find(getSlideSelector(slideOnLeftNum));
+                                slideOnRight = slider.find(getSlideSelector(slideOnRightNum));
 
                                 // position the next and previous slides 
-                                // in preparation
+                                // "offscreen" to the left and right of the
+                                // current one in preperation of the animation
+                                //
+                                slideOnLeft.css('left', '-' + SLIDE_WIDTH_PIXELS);
+                                slideOnRight.css('left', SLIDE_WIDTH_PIXELS);
+                                slideOnLeft.addClass('active');
+                                slideOnRight.addClass('active');
 
-                                prevSlide.css('left', '-' + SLIDE_WIDTH_PIXELS);
-                                nextSlide.css('left', SLIDE_WIDTH_PIXELS);
-
-    //                             prevSlide.addClass('active');
-    //                             nextSlide.addClass('active');
+                                console.log('slidify.js:371  touchstart  slideOnRight left: ' + slideOnRight.css('left') + '  slideOnLeft left: ' + slideOnLeft.css('left') + '   SLIDE_WIDTH_PIXELS: ' + SLIDE_WIDTH_PIXELS + '   slideOnRight selector: ' + getSlideSelector(slideOnRightNum) );
                             }
 
                         }, false);
 
 
                         sliderSlides.addEventListener('touchmove', function(e) {
-
-    //                         console.log('slidify.js:302   touchmove');
 
                             endX = e.changedTouches[0].pageX;
                             endY = e.changedTouches[0].pageY;
@@ -390,60 +389,60 @@
                                 movedMoreVertically = Math.abs(deltaY) > Math.abs(deltaX);
                             }
 
-                            var windowScroll = getWindowScroll();
-
-
-                            console.log('slidify.js:353  touchmove   deltaX: ' + deltaX + '   deltaY: ' + deltaY + '   diff: ' + (Math.abs(deltaY) - Math.abs(deltaX)) + '    windowScroll: ' + windowScroll);
-
                             var swipedLeft = deltaX > 0;
 
 
                             if(IS_TOUCH_SLIDES_WITH_FINGER) {
 
-                                var shift = parseInt(currSlide.css('left'), 10) - deltaX;
+                                // FIXME   do these parseInt's handle NaN's right???
+
+                                // this shifts the CURRENT slide with the finger
+                                var left = parseInt(currSlide.css('left'), 10) || 0;
+                                var shift = left - deltaX;
                                 currSlide.css('left', shift);
 
-    //                             console.log('slidify.js:370   currSlide.css("left"): ' + currSlide.css("left"));
+                                var adjacentSlide = swipedLeft ? slideOnRight : slideOnLeft;
 
-                                /*
+// ORIGINAL TRY
+/*
+
+                                // shift the ADJACENT SLIDES along with the current
                                 if(swipedLeft) {
-                                    // shift the current slide out to the left 
-                                    // and shift the next slide in from the left
+                                    left = parseInt(slideOnRight.css('left'), 10) || SLIDE_WIDTH;
+                                    shift = left - deltaX;
+                                    slideOnRight.css('left', shift);
 
-                                    var leftShift = parseInt(nextSlide.css('left'), 10) + deltaX;
-                                    nextSlide.css('left', leftShift);
-
+                                    console.log('slidify.js:412  touchmove  slideOnRight left: ' + slideOnRight.css('left') + '   shift: ' + shift + '   deltaX: ' + deltaX + '   deltaY: ' + deltaY);
                                 }
-                                else { 
-                                    var rightShift = parseInt(prevSlide.css('left'), 10) + deltaX;
-                                    prevSlide.css('left', rightShift);
-                                }
-                                */
+                                else {
+                                    left = parseInt(slideOnLeft.css('left'), 10) || SLIDE_WIDTH;
+                                    shift =  left - deltaX;
+                                    slideOnLeft.css('left', shift);
 
+                                    console.log('slidify.js:420  touchmove  slideOnLeft left: ' + slideOnLeft.css('left') + '   shift: ' + shift + '   deltaX: ' + deltaX + '   deltaY: ' + deltaY);
+                                }
+*/
+
+
+//  NEW TRY  
+                                left = parseInt(adjacentSlide.css('left'), 10) || SLIDE_WIDTH;
+                                shift = left - deltaX;
+                                adjacentSlide.css('left', shift);
+
+                                console.log('slidify.js:432  touchmove  adjacentSlide left: ' + adjacentSlide.css('left') + '   shift: ' + shift + '   deltaX: ' + deltaX + '   deltaY: ' + deltaY);
                             }
                             else {
-                                //if(IS_TOUCH_SIMPLE) {
-
-    //                             if(animatingSlideChange) {
-    //                                 console.log('slidify.js:309  touchmove   already animating slides, so dont start another');
-    //                                 return;
-    //                             }
-
 
                                 if(movedMoreVertically || animatingSlideChange) {
                                     // allow vertical panning to proceed as usual
                                     var byNotPuttingPreventDefaultHere;
                                 }
                                 else {
-
-    //                                 console.log('slidify.js:331  touchmove   user appeared to slide across slides, so preventDefault  Math.abs(deltaY): ' + Math.abs(deltaY) + '   Math.abs(deltaX): ' + Math.abs(deltaX));
-
                                     // user has appeared to slide across the slides,
-                                    // so DONT scroll the screen in the mobile browser 
+                                    // so DONT scroll the screen in the mobile browser
                                     // as it'll make .animate()'s callback not-seem-to-fire
                                     e.preventDefault();
                                 }
-
                             }
 
                             prevX = endX;
@@ -463,19 +462,17 @@
                             var tapped = (endX === 0 && endY === 0);
                             var changeX = endX - startX;
                             var changeY = endY - startY;
+                            var changeXabs = Math.abs(changeX);
+                            var changeYabs = Math.abs(changeY);
                             var swipedToTheLeft = changeX < 0;
 
+                            currSlide = slider.find(getSlideSelector(currSlideNum));
+
                             //   maybe shouldnt be here, as I copied it from touchmove
-                            movedMoreVertically = Math.abs(changeX) < Math.abs(changeY);
+                            movedMoreVertically = changeXabs < changeYabs;
 
-                            // XXX  arg, if you pan to switch slides and it 
-                            //      scrolls the screen, the callback for the 
-                            //      currSlide.animate call  wont be called!!!1
-                            //
-    //                         movedMoreVertically = movedMoreVertically || Math.abs(changeX -changeY) < 70;
+                            console.log('slidify.js:326  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}));
 
-                            console.log('slidify.js:326  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY})
-                            );
 
                             if(tapped) {
                                 console.log('slidify.js:330  just did a tap, so not doin anythin');
@@ -483,38 +480,83 @@
                             else if(animatingSlideChange) {
                                 console.log('slidify.js:333  changing slides, dont do anythin');
                             }
+                            else if(movedMoreVertically || changeX == 0) {
+                                console.log('slidify.js:475  touchend   movedMoreVertically, so allow panning     changeXabs: ' + changeXabs + '  <  changeYabs: ' + changeYabs); 
+                            }
                             else {
 
                                 if(IS_TOUCH_SLIDES_WITH_FINGER) {
 
-                                    // retract or complete a slide change 
+                                    // retract or complete a slide change
                                     // past a given threshold
 
+                                    var THRESHOLD = Math.floor(SLIDE_WIDTH / 3.0);
 
-                                    var threshold = SLIDE_WIDTH / 3.0;
-                                    var thresholdShift;
+                                    var shift, shiftNext;
 
-                                    if(Math.abs(changeX) > threshold) { 
-                                        // then perform the full slide change
-                                        thresholdShift = SLIDE_WIDTH_PIXELS;
+                                    if(swipedToTheLeft) {
+                                        shift = '-' + SLIDE_WIDTH_PIXELS;
+                                        nextSlide = slideOnRight;
                                     }
                                     else {
-                                        // otherwise retract 
-                                        thresholdShift = '0px';
+                                        shift = SLIDE_WIDTH_PIXELS;
+                                        nextSlide = slideOnLeft;
                                     }
 
 
-                                    console.log('slidify.js:453  check threshold    changeX: ' + changeX + '    SLIDE_WIDTH / 2.0: ' + SLIDE_WIDTH / 2.0 + '    thresholdShift: ' + thresholdShift + '    currSlide left: ' + currSlide.css('left'));
+                                    console.log('slidify.js:500  touchend  checking threshold    changeX: ' + changeX + '    SLIDE_WIDTH / 2.0: ' + SLIDE_WIDTH / 2.0 + '    shift: ' + shift + '    currSlide left: ' + currSlide.css('left') + '   scroll: ' + getWindowScroll());
 
-                                    slider.find(getSlideSelector(currSlideNum)).animate( 
-                                        { 'left': thresholdShift }, 
+                                    // if we haven't passed the threshold, so retract!
+                                    if(changeXabs <= THRESHOLD) {
+
+                                        console.log('slidify.js:505  ' + changeXabs + ' was below threshold of ' + THRESHOLD + ', so retracting...');
+
+                                        shift = '0px';
+
+                                        if(swipedToTheLeft) {   // e.g. went right
+                                            shiftNext = SLIDE_WIDTH_PIXELS;
+                                        }
+                                        else {
+                                            shiftNext = '-' + SLIDE_WIDTH_PIXELS;
+                                        }
+                                    }
+                                    else {
+                                        console.log('slidify.js:508  ' + changeXabs + ' WAS ABOVE the threshold of ' + THRESHOLD + ', so doing slide change!');
+
+                                        shiftNext = '0px';
+
+                                        if(swipedToTheLeft) {
+                                            setSlideNumbers(slideOnRightNum);
+                                        }
+                                        else {
+                                            setSlideNumbers(slideOnLeftNum);
+                                        }
+                                    }
+
+                                    animatingSlideChange = true;
+
+                                    // finish up the slide change here
+                                    //
+                                    currSlide.animate(
+                                        { 'left': shift },
                                         {
                                             complete: function() {
-
-                                                console.log('slidify.js:484  threshold retract!');
+                                                console.log('slidify.js:484  currSlide complete!');
                                             }
                                         }
                                     );
+
+                                    nextSlide.animate(
+                                        { 'left': shiftNext },
+                                        {
+                                            complete: function() {
+                                                console.log('slidify.js:524  nextSlide complete!');
+                                                animatingSlideChange = false;
+
+                                            }
+                                        }
+                                    );
+
                                 }
                                 else {
                                     // TOUCH_SIMPLE
@@ -522,11 +564,8 @@
                                     // don't do anything if the user panned more vertically
                                     // than horizontally, because that'll seem weird
                                     //
-                                    if( movedMoreVertically || changeX === 0) {
-
-                                        console.log('slidify.js:518  touchend   movedMoreVertically, so allow panning     Math.abs(changeX): ' + Math.abs(changeX) + '  <  Math.abs(changeY): ' + Math.abs(changeY)); 
-                                    }
-                                    else if(windowScrollInitial != getWindowScroll()) {
+                                    
+                                   if(windowScrollInitial != getWindowScroll()) {
 
                                         // FIXME TODO XXX HACK -  it feels like 
                                         // there's gotta be a better solution 

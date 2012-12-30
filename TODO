@@ -32,3 +32,6 @@
          why?  the button that goes to the next slide might not
          not neccessarily be on the right! etc etc
 
+
+    4.  check the velocity of a touch event,  if it's really high
+        then perform the slide change even if we didnt pass the threshold
