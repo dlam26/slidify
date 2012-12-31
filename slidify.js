@@ -247,7 +247,7 @@
                     if(withNewCurrentSlideNumber)
                         currSlideNum = withNewCurrentSlideNumber;
 
-                    if(!currSlideNum) {
+                    if(!currSlideNum || currSlideNum == FIRST_SLIDE_NUMBER) {
                         currSlideNum = 1;
                         slideOnRightNum = currSlideNum + 1;
                         slideOnLeftNum = LAST_SLIDE_NUMBER;
@@ -403,7 +403,7 @@
 
 
                             if(startedMovingHorizontaly && Math.abs(deltaY) > 0) {
-                                console.log('slidify.js:397  touchmove   panned vertically,  but already moved horizontally, so preventing vertical panning altogether');
+                                // console.log('slidify.js:397  touchmove   panned vertically,  but already moved horizontally, so preventing vertical panning altogether');
                                 e.preventDefault();
                             }
 
@@ -488,7 +488,7 @@
                                     // if we haven't passed the threshold, so retract!
                                     if(changeXabs <= THRESHOLD) {
 
-                                        console.log('slidify.js:505  ' + changeXabs + ' was below threshold of ' + THRESHOLD + ', so RETRACTING...');
+                                        console.log('slidify.js:505  touchend  ' + changeXabs + ' was below threshold of ' + THRESHOLD + ', so RETRACTING...');
 
                                         shift = '0px';
 
