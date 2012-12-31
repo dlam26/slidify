@@ -475,6 +475,9 @@
                             else if(movedMoreVertically || changeX === 0) {
                                 console.log('slidify.js:475  touchend   movedMoreVertically, so allow panning     changeXabs: ' + changeXabs + '  <  changeYabs: ' + changeYabs);
                             }
+                            else if(movedMoreVertically || changeX === 0) {
+                                console.log('slidify.js:475  touchend   movedMoreVertically, so allow panning     changeXabs: ' + changeXabs + '  <  changeYabs: ' + changeYabs);
+                            }
                             else {
 
                                 if(IS_TOUCH_SLIDES_WITH_FINGER) {
@@ -544,15 +547,9 @@
 
                                         }
                                     });
-
                                 }
                                 else {
                                     // TOUCH_SIMPLE
-
-                                    // don't do anything if the user panned more vertically
-                                    // than horizontally, because that'll seem weird
-                                    //
-
                                     // perform the swipe and slide change
 
                                     e.preventDefault();   // disable panning
