@@ -423,19 +423,6 @@
                                 left = parseInt(slideOnLeft.css('left'), 10) || SLIDE_WIDTH;
                                 slideOnLeft.css('left', left - deltaX);
                             }
-                            else {
-
-                                if(movedMoreVertically || animatingSlideChange) {
-                                    // allow vertical panning to proceed as usual
-                                    var byNotPuttingPreventDefaultHere;
-                                }
-                                else {
-                                    // user has appeared to slide across the slides,
-                                    // so DONT scroll the screen in the mobile browser
-                                    // as it'll make .animate()'s callback not-seem-to-fire
-//                                     e.preventDefault();
-                                }
-                            }
 
                             prevX = endX;
                             prevY = endY;
