@@ -319,7 +319,7 @@
                     var movedMoreVertically = true;
                     var startedMovingHorizontaly;
                     var animatingSlideChange;
-                    var windowScrollInitial;
+                    var windowScrollStart, windowScrollEnd;
 
                     // [0] because slider is a jQuery object
                     //      XXX FIXME  what if no slides???
@@ -350,7 +350,7 @@
                             prevY  = 0;
                             deltaX = 0;
                             deltaY = 0;
-                            windowScrollInitial = getWindowScroll();
+                            windowScrollStart = getWindowScroll();
                             startedMovingHorizontaly = false;
                             animatingSlideChange = false;
 
@@ -370,7 +370,7 @@
                                 slideOnLeft.addClass('active');
                                 slideOnRight.addClass('active');
 
-                                console.log('slidify.js:371  touchstart  slideOnRight left: ' + slideOnRight.css('left') + '  slideOnLeft left: ' + slideOnLeft.css('left') + '   SLIDE_WIDTH_PIXELS: ' + SLIDE_WIDTH_PIXELS + '   slideOnRight selector: ' + getSlideSelector(slideOnRightNum) );
+                                // console.log('slidify.js:371  touchstart  slideOnRight left: ' + slideOnRight.css('left') + '  slideOnLeft left: ' + slideOnLeft.css('left') + '   SLIDE_WIDTH_PIXELS: ' + SLIDE_WIDTH_PIXELS + '   slideOnRight selector: ' + getSlideSelector(slideOnRightNum) );
                             }
 
                         }, false);
@@ -445,12 +445,15 @@
                             var changeYabs = Math.abs(changeY);
                             var swipedToTheLeft = changeX < 0;
 
+                            windowScrollEnd = getWindowScroll();
+                            var totalScrollAmount = Math.abs(windowScrollEnd - windowScrollStart);
+
                             currSlide = slider.find(getSlideSelector(currSlideNum));
 
                             //   maybe shouldnt be here, as I copied it from touchmove
                             movedMoreVertically = changeXabs < changeYabs;
 
-                            console.log('slidify.js:326  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}));
+                            console.log('slidify.js:326  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}) + '  window scroll amount? ' + totalScrollAmount);
 
 
                             if(tapped) {
@@ -458,12 +461,6 @@
                             }
                             else if(animatingSlideChange) {
                                 console.log('slidify.js:333  animatingSlideChange already, so dont do anythin');
-                            }
-                            else if(movedMoreVertically || changeX === 0) {
-                                console.log('slidify.js:475  touchend   movedMoreVertically, so allow panning     changeXabs: ' + changeXabs + '  <  changeYabs: ' + changeYabs);
-                            }
-                            else if(movedMoreVertically || changeX === 0) {
-                                console.log('slidify.js:475  touchend   movedMoreVertically, so allow panning     changeXabs: ' + changeXabs + '  <  changeYabs: ' + changeYabs);
                             }
                             else {
 
@@ -539,28 +536,31 @@
                                     // TOUCH_SIMPLE
                                     // perform the swipe and slide change
 
-                                    e.preventDefault();   // disable panning
+                                    if(!movedMoreVertically && totalScrollAmount === 0) {
 
-                                    var direction;        // figure out where to go
+                                        e.preventDefault();   // disable panning
 
-                                    if(swipedToTheLeft) {
-                                        console.log('slidify.js:361  touchend  swiped left');
-                                        direction = RIGHT;
+                                        var direction;        // figure out where to go
+
+                                        if(swipedToTheLeft) {
+                                            console.log('slidify.js:361  touchend  swiped left');
+                                            direction = RIGHT;
+                                        }
+                                        else {
+                                            console.log('slidify.js:367  touchend  swiped right');
+                                            direction = LEFT;
+                                        }
+
+                                        //  animate the slide change, and disable
+                                        //  additional swipes while the animation
+                                        //  is still going
+                                        //
+                                        animatingSlideChange = true;
+
+                                        doAnimate(direction, function() {
+                                            animatingSlideChange = false;
+                                        });
                                     }
-                                    else {
-                                        console.log('slidify.js:367  touchend  swiped right');
-                                        direction = LEFT;
-                                    }
-
-                                    //  animate the slide change, and disable
-                                    //  additional swipes while the animation
-                                    //  is still going
-                                    //
-                                    animatingSlideChange = true;
-
-                                    doAnimate(direction, function() {
-                                        animatingSlideChange = false;
-                                    });
                                 }
                             }
 
