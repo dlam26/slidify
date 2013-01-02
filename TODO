@@ -11,6 +11,7 @@
 
 
     2.  BUG   On iOS, if the window is currently being scrolled/panned
+              vertically while you try to change slides,
               the `complete` callbacks on calls to .animate()
               MAY NOT RUN for some weird reason!
 
@@ -37,6 +38,6 @@
         then perform the slide change even if we didnt pass the threshold
 
 
-    5.  if the user is pinching to zoom in (count of touches is more than one?),
-        than the slider shouldnt move!
-
+    5.  BUG:  if you use one finger to start a slide change, then
+              tap again with a second finger,  there will be UI
+              weirdness and the slide transition WILL NOT complete
