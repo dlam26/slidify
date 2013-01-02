@@ -15,18 +15,10 @@
               the `complete` callbacks on calls to .animate()
               MAY NOT RUN for some weird reason!
 
-            when you inspect element, there's multiple slides with an 'active';
-            class hmmmm
+            seems maybe related to... http://stackoverflow.com/questions/10482227/javascript-dom-changes-in-touchmove-delayed-until-scroll-ends-on-mobile-safari
 
-            <div class="slidified">
-                ...
-                <div class="slides">
-                    <div class="slide1 slide active" style="left: 0px; ">
-                    <div class="slide2 slide"></div>
-                    <div class="slide3 slide active" style="left: -800px; "></div>
-                </div>
-            </div>
-
+            "Note that iOS devices freeze DOM manipulation during scroll,
+             queuing them to apply when the scroll finishes."
 
 
     3.  rename left/right to prev/next etc.
