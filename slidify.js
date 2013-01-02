@@ -354,7 +354,7 @@
                             startedMovingHorizontaly = false;
                             animatingSlideChange = false;
 
-                            console.log('slidify.js:336  touchstart  at ' + touchToString({ x: startX, y:startY }) + '  currSlideNum: ' + currSlideNum);
+                            console.log('slidify.js:336  touchstart  at ' + touchToString({ x: startX, y:startY }) + '  currSlideNum: ' + currSlideNum + '  getWindowScroll(): ' + getWindowScroll());
 
                             if(IS_TOUCH_SLIDES_WITH_FINGER) {
                                 currSlide = slider.find(getSlideSelector(currSlideNum));
@@ -402,8 +402,9 @@
                             // console.log('slidify.js:409  touchmove   deltaX: ' + deltaX + '  deltaY: ' + deltaY);
 
 
-                            if(startedMovingHorizontaly && Math.abs(deltaY) > 0) {
-                                // console.log('slidify.js:397  touchmove   panned vertically,  but already moved horizontally, so preventing vertical panning altogether');
+                            if(startedMovingHorizontaly &&
+                                    Math.abs(deltaY) > 0) {
+//                              console.log('slidify.js:397  touchmove   panned vertically,  but already moved horizontally, so preventing vertical panning altogether');
                                 e.preventDefault();
                             }
 
@@ -411,9 +412,9 @@
 
                             if(IS_TOUCH_SLIDES_WITH_FINGER) {
 
-                                // FIXME   do these parseInt's handle NaN's right???
+                                //XXX do these parseInt's handle NaN's right???
 
-                                // this shifts the CURRENT slide with the finger
+                                //this shifts the CURRENT slide with the finger
                                 var left = parseInt(currSlide.css('left'), 10) || 0;
                                 currSlide.css('left', left - deltaX);
 
@@ -453,7 +454,7 @@
                             //   maybe shouldnt be here, as I copied it from touchmove
                             movedMoreVertically = changeXabs < changeYabs;
 
-                            console.log('slidify.js:326  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}) + '  window scroll amount? ' + totalScrollAmount);
+                            console.log('slidify.js:326  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}) + '  totalScrollAmount? ' + totalScrollAmount + '  getWindowScroll(): ' + getWindowScroll());
 
 
                             if(tapped) {
@@ -469,7 +470,7 @@
                                     // retract or complete a slide change
                                     // past a given threshold
 
-                                    var THRESHOLD = Math.floor(SLIDE_WIDTH / 3.0);
+                                    var THRESHOLD = Math.floor(SLIDE_WIDTH / 5.0);
 
                                     var shift, shiftNext;
 
