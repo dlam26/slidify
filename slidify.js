@@ -352,11 +352,11 @@
                             deltaX = 0;
                             deltaY = 0;
                             windowScrollStart = getWindowScroll();
-                            startedPanningHorizontaly = false;
+                            startedPanningHorizontaly = undefined;
                             animatingSlideChange = false;
                             usedOneFinger = e.targetTouches.length == 1;
 
-                            console.log('slidify.js:336  touchstart  at ' + touchToString({ x: startX, y:startY }) + '  currSlideNum: ' + currSlideNum + '  windowScrollStart: ' + windowScrollStart);
+                            console.log('slidify.js:336  touchstart  at ' + touchToString({ x: startX, y:startY }) + '  currSlideNum: ' + currSlideNum + '  windowScrollStart: ' + windowScrollStart + '   usedOneFinger: ' + usedOneFinger);
 
                             if(IS_TOUCH_SLIDES_WITH_FINGER) {
                                 currSlide = slider.find(getSlideSelector(currSlideNum));
@@ -397,20 +397,24 @@
                             else {
                                 if(Math.abs(deltaY) > Math.abs(deltaX)) {
                                     movedMoreVertically = true;
-
+                                    if(startedPanningHorizontaly === undefined) {
+                                        startedPanningHorizontaly = false;
+                                    }
                                 }
                                 else {
-                                    startedPanningHorizontaly = true;
                                     movedMoreVertically = false;
+                                    if(startedPanningHorizontaly === undefined) {
+                                        startedPanningHorizontaly = true;
+                                    }
                                 }
                             }
 
-                            // console.log('slidify.js:409  touchmove   deltaX: ' + deltaX + '  deltaY: ' + deltaY);
+                            console.log('slidify.js:409  touchmove   deltaX: ' + deltaX + '  deltaY: ' + deltaY + '  startedPanningHorizontaly: ' + startedPanningHorizontaly);
 
-                            if(startedPanningHorizontaly &&
+                            if(startedPanningHorizontaly === true &&
                                     Math.abs(deltaY) > 0) {
 
-//                             console.log('slidify.js:397  touchmove   panned vertically,  but already moved horizontally, so preventing vertical panning altogether');
+//                                 console.log('slidify.js:397  touchmove   panned vertically,  but already moved horizontally, so preventing vertical panning altogether');
                                 e.preventDefault();
                             }
 
@@ -418,19 +422,30 @@
 
                             if(IS_TOUCH_SLIDES_WITH_FINGER) {
 
-                                // this shifts the current and adjacent slides
-                                // with the finger...!
+                                // Important!  If the page is being
+                                // panned/scrolled iOS will queue up any
+                                // changes to the DOM, and performs them after
+                                // the pan/scroll is done!
                                 //
-                                // XXX will this handle parseInt's NaN's right???
+                                // So to stop this UI weirdness, don't shift
+                                // the slides if the pan started vertically
                                 //
-                                var left = parseInt(currSlide.css('left'), 10) || 0;
-                                currSlide.css('left', left - deltaX);
+                                if(startedPanningHorizontaly === true) {
 
-                                left = parseInt(slideOnRight.css('left'), 10) || SLIDE_WIDTH;
-                                slideOnRight.css('left', left - deltaX);
+                                    // this shifts the current and adjacent slides
+                                    // with the finger...!
+                                    //
+                                    // XXX will this handle parseInt's NaN's right???
+                                    //
+                                    var left = parseInt(currSlide.css('left'), 10) || 0;
+                                    currSlide.css('left', left - deltaX);
 
-                                left = parseInt(slideOnLeft.css('left'), 10) || SLIDE_WIDTH;
-                                slideOnLeft.css('left', left - deltaX);
+                                    left = parseInt(slideOnRight.css('left'), 10) || SLIDE_WIDTH;
+                                    slideOnRight.css('left', left - deltaX);
+
+                                    left = parseInt(slideOnLeft.css('left'), 10) || SLIDE_WIDTH;
+                                    slideOnLeft.css('left', left - deltaX);
+                                }
                             }
 
                             prevX = endX;
@@ -467,7 +482,7 @@
                             //   maybe shouldnt be here, as I copied it from touchmove
                             movedMoreVertically = changeXabs < changeYabs;
 
-                            console.log('slidify.js:457  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}) + '  totalScrollAmount? ' + totalScrollAmount + '  windowScrollEnd: ' + windowScrollEnd);
+                            console.log('slidify.js:457  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}) + '  totalScrollAmount? ' + totalScrollAmount + '  windowScrollEnd: ' + windowScrollEnd + '  startedPanningHorizontaly: ' + startedPanningHorizontaly);
 
 
                             if(tapped) {
@@ -531,14 +546,14 @@
                                     currSlide.animate({ 'left': shift }, {
                                         duration: opts.duration,
                                         complete: function() {
-                                            console.log('slidify.js:484  currSlide complete!');
+//                                             console.log('slidify.js:484  currSlide complete!');
                                         }
                                     });
 
                                     nextSlide.animate({ 'left': shiftNext }, {
                                         duration: opts.duration,
                                         complete: function() {
-                                            console.log('slidify.js:524  nextSlide complete!');
+//                                             console.log('slidify.js:524  nextSlide complete!');
                                             animatingSlideChange = false;
 
                                         }
