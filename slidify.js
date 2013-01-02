@@ -337,6 +337,12 @@
 
                             console.log('----------------------------------------');
 
+                            // http://uihacker.blogspot.tw/2011/01/android-touchmove-event-bug.html
+                            // http://code.google.com/p/android/issues/detail?id=5491
+                            if( navigator.userAgent.match(/Android/i) ) {
+                              e.preventDefault();
+                            }
+
                             if(IS_TOUCH_SIMPLE && animatingSlideChange) {
                                 console.log('slidify.js:279  touchstart   animatingSlideChange already, so dont start another');
                                 return;
