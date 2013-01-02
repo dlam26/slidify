@@ -315,8 +315,9 @@
                     */
 
                     // state variables
-                    var startX, startY, endX, endY, prevX, prevY, deltaX, deltaY;
-                    var movedMoreVertically = true;
+                    var startX, startY, endX, endY, prevX, prevY;
+                    var changeX, changeY, changeXabs, changeYabs;
+
                     var windowScrollStart, windowScrollEnd;
                     var startedPanningHorizontaly;
                     var animatingSlideChange;
@@ -394,22 +395,30 @@
                             endY = e.changedTouches[0].pageY;
                             prevX = prevX || endX;
                             prevY = prevY || endY;
-                            deltaX = prevX - endX;
-                            deltaY = prevY - endY;
+
+                            changeX = endX - startX;
+                            changeY = endY - startY;
+                            changeXabs = Math.abs(changeX);
+                            changeYabs = Math.abs(changeY);
+
+                            var deltaX = prevX - endX;
+                            var deltaY = prevY - endY;
+
+                            // 1/2/13   ensure slide transition even
+                            //          when zoomed in...
+                            if(changeXabs > changeYabs) {
+                                e.preventDefault();
+                            }
 
                             if(deltaX === 0 && deltaY === 0) {
-                                movedMoreVertically = true;         // XXX really?
+                                var tappedSoDontDoAnything;
                             }
                             else {
-                                if(Math.abs(deltaY) > Math.abs(deltaX)) {
-                                    movedMoreVertically = true;
-                                    if(startedPanningHorizontaly === undefined) {
+                                if(startedPanningHorizontaly === undefined) {
+                                    if(Math.abs(deltaY) > Math.abs(deltaX)) {
                                         startedPanningHorizontaly = false;
                                     }
-                                }
-                                else {
-                                    movedMoreVertically = false;
-                                    if(startedPanningHorizontaly === undefined) {
+                                    else {
                                         startedPanningHorizontaly = true;
                                     }
                                 }
@@ -473,11 +482,11 @@
                             }
 
                             // calculate end state
+                            changeX = endX - startX;
+                            changeY = endY - startY;
+                            changeXabs = Math.abs(changeX);
+                            changeYabs = Math.abs(changeY);
                             var tapped = (endX === 0 && endY === 0);
-                            var changeX = endX - startX;
-                            var changeY = endY - startY;
-                            var changeXabs = Math.abs(changeX);
-                            var changeYabs = Math.abs(changeY);
                             var swipedToTheLeft = changeX < 0;
 
                             windowScrollEnd = getWindowScroll();
@@ -486,7 +495,7 @@
                             currSlide = slider.find(getSlideSelector(currSlideNum));
 
                             //   maybe shouldnt be here, as I copied it from touchmove
-                            movedMoreVertically = changeXabs < changeYabs;
+                            var movedMoreVertically = changeXabs < changeYabs;
 
                             console.log('slidify.js:457  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}) + '  totalScrollAmount? ' + totalScrollAmount + '  windowScrollEnd: ' + windowScrollEnd + '  startedPanningHorizontaly: ' + startedPanningHorizontaly);
 
