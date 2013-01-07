@@ -10,10 +10,11 @@
     position:absolute;
     left:0px;
 }
-/*
-.slidified .slide.active + .slide {
-    display:block;
-    position:absolute;
+.slidified .control {
+    font-size:48px;
 }
-*/
+.slidified .control.on {
+    color:cornflowerblue;
+}
+
 

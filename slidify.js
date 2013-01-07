@@ -26,7 +26,7 @@
                    and with descendent 'control' elements which should
                    be the page control dots.
 
-                   The active page/dot is set with a 'on' class
+                   The active page/dot is set with an additional 'on' class
 
                 4.
 
