@@ -33,3 +33,13 @@
     5.  BUG:  if you use one finger to start a slide change, then
               tap again with a second finger,  there will be UI
               weirdness and the slide transition WILL NOT complete
+
+
+    6.  some weird bug in iOS 6 breaks stuff when the window is scrolled or something
+
+        it effects jQuery animate etc.
+
+        https://github.com/mattbryson/TouchSwipe-Jquery-Plugin/issues/30
+        https://gist.github.com/3755461
+        http://support.dev7studios.com/discussions/caroufredsel/52-swipe-problem-on-ios-6
+        http://forum.jquery.com/topic/animate-buggy-in-ios-6-jellybean
