@@ -349,17 +349,6 @@
 
                             console.log('------------------------------------');
 
-                            // http://uihacker.blogspot.tw/2011/01/android-touchmove-event-bug.html
-                            // http://code.google.com/p/android/issues/detail?id=5491
-                            if( navigator.userAgent.match(/Android/i) ) {
-                              e.preventDefault();
-                            }
-
-                            if(animatingSlideChange) {
-                                console.log('slidify.js:279  touchstart   animatingSlideChange already, so dont start another');
-                                return;
-                            }
-
                             // setup initial state
                             startX = e.targetTouches[0].pageX;
                             startY = e.targetTouches[0].pageY;
@@ -372,6 +361,18 @@
                             windowScrollStart = getWindowScroll();
                             startedPanningHorizontaly = undefined;
                             usedOneFinger = e.touches.length == 1;
+
+
+                            // http://uihacker.blogspot.tw/2011/01/android-touchmove-event-bug.html
+                            // http://code.google.com/p/android/issues/detail?id=5491
+                            if( navigator.userAgent.match(/Android/i) ) {
+                              e.preventDefault();
+                            }
+
+                            if(animatingSlideChange) {
+                                console.log('slidify.js:279  touchstart   animatingSlideChange already, so dont start another');
+                                return;
+                            }
 
                             console.log('slidify.js:336  touchstart  at ' + touchToString({ x: startX, y:startY }) + '  currSlideNum: ' + currSlideNum + '  windowScrollStart: ' + windowScrollStart + '   usedOneFinger: ' + usedOneFinger + '   animatingSlideChange: ' + animatingSlideChange);
 
@@ -540,11 +541,27 @@
                             //   maybe shouldnt be here, as I copied it from touchmove
                             var movedMoreVertically = changeXabs < changeYabs;
 
-                            console.log('slidify.js:457  touchend at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}) + '  totalScrollAmount? ' + totalScrollAmount + '  windowScrollEnd: ' + windowScrollEnd + '  startedPanningHorizontaly: ' + startedPanningHorizontaly + '  e.touches.length: ' +  e.touches.length );
+                            console.log('slidify.js:543  touchend  at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}) + '  totalScrollAmount? ' + totalScrollAmount + '  windowScrollEnd: ' + windowScrollEnd + '  startedPanningHorizontaly: ' + startedPanningHorizontaly + '  e.touches.length: ' +  e.touches.length );
 
 
                             if(tapped) {
-                                console.log('slidify.js:462  touchend  just did a tap, so not doin anythin');
+                                console.log('slidify.js:547  touchend  just did a tap, so not doin anythin');
+
+                                // XXX IMPORTANT!  We still need to clean up
+                                //     state still ...probably should turn this
+                                //     stuff into a cleanupState() function or
+                                //     something
+
+                                animatingSlideChange = false;
+
+                                if(IS_TOUCH_SLIDES_WITH_FINGER) {
+                                    slideOnLeft.css('left', '');
+                                    slideOnRight.css('left', '');
+                                    slideOnLeft.removeClass(ACTIVE);
+                                    slideOnRight.removeClass(ACTIVE);
+                                }
+
+                                return;
                             }
                             else {
 
