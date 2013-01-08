@@ -28,8 +28,6 @@
 
                    The active page/dot is set with an additional 'on' class
 
-                4.
-
             Usage:
 
                 $('div.some_slides_container').slidify();
@@ -89,7 +87,8 @@
                 //  2. we're on the first slide and the left arrow is pressed
                 var willLoopAround = false;
 
-                var currSlideNum, slideOnLeftNum, slideOnRightNum;
+                var currSlideNum, nextSlideNum;
+                var slideOnLeftNum, slideOnRightNum;
                 var currSlide, nextSlide, slideOnLeft, slideOnRight;
 
                 enableSlidePageControlButtons();
@@ -133,14 +132,14 @@
                                 console.log('slidify.js:120  at start of slides!  currSlideNum: ' + currSlideNum + '   FIRST_SLIDE_NUMBER: ' + FIRST_SLIDE_NUMBER);
 
                                 if(opts.looped) {
-                                    slideOnRightNum = LAST_SLIDE_NUMBER;
+                                    nextSlideNum = LAST_SLIDE_NUMBER;
                                 }
                                 else {
                                     return;   // XXX  don't loop, so stop right away!
                                 }
                             }
                             else {
-                                slideOnRightNum = currSlideNum - 1;
+                                nextSlideNum = currSlideNum - 1;
                             }
 
                             // this moves the slides left
@@ -155,14 +154,14 @@
                                 console.log('slidify.js:121  at end of slides!   currSlideNum: ' + currSlideNum + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER);
 
                                 if(opts.looped) {
-                                    slideOnRightNum = FIRST_SLIDE_NUMBER;
+                                    nextSlideNum = FIRST_SLIDE_NUMBER;
                                 }
                                 else {
                                     return;  // XXX
                                 }
                             }
                             else {
-                                slideOnRightNum = currSlideNum + 1;
+                                nextSlideNum = currSlideNum + 1;
                             }
 
                             // ...and this moves the slides right!
@@ -179,12 +178,12 @@
 
                     // build the class selector for the next slide
                     var selectorCurrent = getSlideSelector(currSlideNum);
-                    var selectorNext = getSlideSelector(slideOnRightNum);
+                    var selectorNext = getSlideSelector(nextSlideNum);
                     var currSlide  = slider.find(selectorCurrent);
-                    var slideOnRight  = slider.find(selectorNext);
+                    var nextSlide  = slider.find(selectorNext);
 
 
-                    console.log('slidify.js:152  doAnimate() ' + direction + '   selectorCurrent: ' + selectorCurrent + '   selectorNext: ' + selectorNext + '    currSlideEnd.left: ' + currSlideEnd.left + '    nextSlideEnd.left: ' + nextSlideEnd.left + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER + '   currSlideNum: ' + currSlideNum + '   slideOnRightNum: ' + slideOnRightNum + '   currSlide.size(): ' + currSlide.size() + '   slideOnRight.size(): ' + slideOnRight.size());
+                    console.log('slidify.js:152  doAnimate() ' + direction + '   selectorCurrent: ' + selectorCurrent + '   selectorNext: ' + selectorNext + '    currSlideEnd.left: ' + currSlideEnd.left + '    nextSlideEnd.left: ' + nextSlideEnd.left + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER + '   currSlideNum: ' + currSlideNum + '   nextSlideNum: ' + nextSlideNum + '   currSlide.size(): ' + currSlide.size() + '   nextSlide.size(): ' + nextSlide.size());
 
 
                     // slide OUT the current slide and slide IN the new one
@@ -206,7 +205,7 @@
                         }
                     });
 
-                    slideOnRight.addClass(ACTIVE).css(nextSlideStart).animate(nextSlideEnd, {
+                    nextSlide.addClass(ACTIVE).css(nextSlideStart).animate(nextSlideEnd, {
                         duration: opts.duration,
                         complete: function() {
 
@@ -214,24 +213,20 @@
                             //       the page such that the slider goes off the screen,
                             //       these (important) callbacks might not run!
 
-                            console.log('slidify.js:220  doAnimate()  slideOnRight.animate callback!  cleaning up slider state...');
+                            console.log('slidify.js:220  doAnimate()  nextSlide.animate callback!  cleaning up slider state...');
 
                             // ...because we disable it at the top of doAnimate
                             // to prevent next/prev click spam
                             enableSlidePageControlButtons();
 
-                            opts.sliderChangedCallback(currSlideNum, slideOnRightNum);
+                            opts.sliderChangedCallback(currSlideNum, nextSlideNum);
 
                             doAnimateCallback();
                         }
                     });
 
-                    // finally, the orange page control / bullet things
-                    // should reflect the current slide we're on....!
-                    var pageControls = slider.find(opts.pagecontrol + ' .control');
-                    pageControls.removeClass('on').eq(slideOnRightNum - 1).addClass('on');
 
-                    setSlideNumbers(slideOnRightNum);
+                    setSlideNumbers(nextSlideNum);
 
                     console.log('slidify.js:241  doAnimate()  finished!  currSlideNum: ' + currSlideNum);
 
@@ -261,8 +256,14 @@
                         slideOnLeftNum = currSlideNum - 1;
                     }
 
-//                     console.log('slidify.js:256  setSlideNumbers()   left: ' + slideOnLeftNum + '   curr: ' + currSlideNum + '   right: ' + slideOnRightNum);
+                    console.log('slidify.js:256  setSlideNumbers()   left: ' + slideOnLeftNum + '   curr: ' + currSlideNum + '   right: ' + slideOnRightNum);
 
+                }
+
+                function updatePageControl() {
+                    console.log('slidify.js;264  updatePageControl()  ' + (currSlideNum - 1));
+                    var pageControls = slider.find(opts.pagecontrol + ' .control');
+                    pageControls.removeClass('on').eq(currSlideNum - 1).addClass('on');
                 }
 
                 function toggleArrowPressed(e) {
@@ -279,11 +280,13 @@
                     slider.find(opts.left).click(function() {
                         console.log('slidify.js:208  Clicked left');
                         doAnimate(LEFT);
+                        updatePageControl();
                     });
 
                     slider.find(opts.right).click(function() {
                         console.log('slidify.js:212  Clicked right');
                         doAnimate(RIGHT);
+                        updatePageControl();
                     });
 
                     // clicking on a arrow buttons should show a i-am-pressed state
@@ -385,8 +388,8 @@
                                 //
                                 slideOnLeft.css('left', '-' + SLIDE_WIDTH_PIXELS);
                                 slideOnRight.css('left', SLIDE_WIDTH_PIXELS);
-                                slideOnLeft.addClass('active');
-                                slideOnRight.addClass('active');
+                                slideOnLeft.addClass(ACTIVE);
+                                slideOnRight.addClass(ACTIVE);
 
                                 // console.log('slidify.js:371  touchstart  slideOnRight left: ' + slideOnRight.css('left') + '  slideOnLeft left: ' + slideOnLeft.css('left') + '   SLIDE_WIDTH_PIXELS: ' + SLIDE_WIDTH_PIXELS + '   slideOnRight selector: ' + getSlideSelector(slideOnRightNum) );
                             }
@@ -541,7 +544,7 @@
 
 
                             if(tapped) {
-                                console.log('slidify.js:462  just did a tap, so not doin anythin');
+                                console.log('slidify.js:462  touchend  just did a tap, so not doin anythin');
                             }
                             else {
 
@@ -566,14 +569,14 @@
                                         nextSlide = slideOnLeft;
                                     }
 
-                                    console.log('slidify.js:500  touchend  checking threshold    changeX: ' + changeX + '    SLIDE_WIDTH / 2.0: ' + SLIDE_WIDTH / 2.0 + '    shift: ' + shift + '    currSlide left: ' + currSlide.css('left') + '   windowScrollEnd: ' + windowScrollEnd);
+//                                     console.log('slidify.js:500  touchend  checking threshold    changeX: ' + changeX + '    SLIDE_WIDTH / 2.0: ' + SLIDE_WIDTH / 2.0 + '    shift: ' + shift + '    currSlide left: ' + currSlide.css('left') + '   windowScrollEnd: ' + windowScrollEnd);
 
                                     if(changeXabs <= THRESHOLD) {
 
                                         // we haven't passed the threshold
                                         // ...so retract!
 
-                                        console.log('slidify.js:505  touchend  ' + changeXabs + ' was below threshold of ' + THRESHOLD + ', so RETRACTING...');
+//                                         console.log('slidify.js:505  touchend  ' + changeXabs + ' was below threshold of ' + THRESHOLD + ', so RETRACTING...');
 
                                         shift = '0px';
 
@@ -585,7 +588,7 @@
                                         }
                                     }
                                     else {
-                                        console.log('slidify.js:508  ' + changeXabs + ' WAS ABOVE the threshold of ' + THRESHOLD + ', so doing slide change!');
+//                                         console.log('slidify.js:508  ' + changeXabs + ' WAS ABOVE the threshold of ' + THRESHOLD + ', so doing slide change!');
 
                                         shiftNext = '0px';
 
@@ -604,19 +607,35 @@
                                     currSlide.animate({ 'left': shift }, {
                                         duration: opts.duration,
                                         complete: function() {
-//                                             console.log('slidify.js:484  currSlide complete!');
+                                            console.log('slidify.js:484  currSlide complete!');
+
+                                            var retracted = shift == '0px';
+
+                                            if(!retracted) {
+                                                if(swipedToTheLeft)
+                                                    slideOnLeft.removeClass(ACTIVE);
+                                                else
+                                                    slideOnRight.removeClass(ACTIVE);
+
+                                                $(this).removeClass(ACTIVE);
+                                            }
+                                            else {
+                                                slideOnLeft.removeClass(ACTIVE);
+                                                slideOnRight.removeClass(ACTIVE);
+                                            }
                                         }
                                     });
 
                                     nextSlide.animate({ 'left': shiftNext }, {
                                         duration: opts.duration,
                                         complete: function() {
-//                                             console.log('slidify.js:524  nextSlide complete!');
+                                            console.log('slidify.js:524  nextSlide complete!');
                                             animatingSlideChange = false;
                                             completingSlideChange = false;
 
                                         }
                                     });
+
                                 }
                                 else {
                                     // TOUCH_SIMPLE
@@ -629,11 +648,11 @@
                                         var direction;        // figure out where to go
 
                                         if(swipedToTheLeft) {
-                                            console.log('slidify.js:361  touchend  swiped left');
+//                                             console.log('slidify.js:646  touchend  swiped left');
                                             direction = RIGHT;
                                         }
                                         else {
-                                            console.log('slidify.js:367  touchend  swiped right');
+//                                             console.log('slidify.js:650  touchend  swiped right');
                                             direction = LEFT;
                                         }
 
@@ -646,8 +665,11 @@
                                         doAnimate(direction, function() {
                                             animatingSlideChange = false;
                                         });
+
                                     }
                                 }
+
+                                updatePageControl();
                             }
 
                         }, false);

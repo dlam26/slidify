@@ -34,7 +34,7 @@
                 width: 800px;
             }
             .slides {
-                margin-top:50px;
+                margin-top:20px;
             }
             .slide1 {
                 background-color:green;
@@ -44,7 +44,7 @@
             }
 
             .slide3 {
-                background-color:blue;
+                background-color:pink;
             }
 
             .slide4 {
@@ -79,20 +79,20 @@
                 right:15px;
                 color:orange;
             }
-
             a {
                 cursor:pointer;
                 color:blue;
                 text-decoration:none;
                 font-size:64px;
             }
-
             div.loren-ipsum {
 
             }
-
             h1:hover {
                 color:red;
+            }
+            .page {
+                font-size:20px;
             }
 
         </style>
@@ -102,7 +102,7 @@
             var DURATION = 400;
 
             $(document).ready(function() {
-//              $('.slidified').slidify({ duration: DURATION });
+ //             $('.slidified').slidify({ duration: DURATION });
                 $('.slidified').slidify({ 'touch':'slides-with-finger', 'duration':DURATION });
             });
         </script>
@@ -141,11 +141,10 @@
                 </div>
 
                 <div class="slide1 slide active">
-                    <h1> I have a CSS hover state! </h1>
                     <div class="page">Page 1</div>
+                    <h1> I have a CSS hover state! </h1>
 
-                    <br>
-                    <br>
+                    <br> <br>
 
                     <div>
                         Stuff in these slides are  to test if you can actually
@@ -156,6 +155,7 @@
                 </div>
 
                 <div class="slide2 slide">
+                    <div class="page">Page 2</div>
 
                     <div style="margin-left:23%; margin-top:20px;">
                         <iframe width="420" height="315" src="http://www.youtube.com/embed/ZnehCBoYLbc" frameborder="0" allowfullscreen></iframe>
@@ -163,23 +163,21 @@
                 </div>
 
                 <div class="slide3 slide">
-
+                    <div class="page">Page 3</div>
                     <h1 onclick="alert('hai')">
                         I have a CSS hover state and onclick alert!
                     </h1>
 
-                    <div class="page">Page 2</div>
 
-                    <br/>
-                    <br/>
+                    <br> <br>
 
                     <a href="http://dlam.me">http://dlam.me</a>
                     ( &lt;-- this is a regular link )
                 </div>
 
                 <div class="slide4 slide">
-                    <h2> I got nothing =( </h2>
                     <div class="page">Page 3</div>
+                    <h2> I got nothing =( </h2>
                 </div>
 
                 <div class="slide5 slide">
@@ -260,6 +258,7 @@
         <br/>
         <br/>
 
+        <!--
         <div class="slidified">
 
             <div class="page_control">
@@ -298,6 +297,7 @@
             </div>
 
         </div>
+        -->
 
 
     </body>
