@@ -347,6 +347,17 @@
 
                         sliderSlides.addEventListener('touchstart', function(e) {
 
+                            if(animatingSlideChange) {
+                                console.log('slidify.js:279  touchstart   animatingSlideChange already, so dont start another');
+                                return;
+                            }
+
+                            // http://uihacker.blogspot.tw/2011/01/android-touchmove-event-bug.html
+                            // http://code.google.com/p/android/issues/detail?id=5491
+                            if( navigator.userAgent.match(/Android/i) ) {
+                              e.preventDefault();
+                            }
+
                             console.log('------------------------------------');
 
                             // setup initial state
@@ -361,18 +372,6 @@
                             windowScrollStart = getWindowScroll();
                             startedPanningHorizontaly = undefined;
                             usedOneFinger = e.touches.length == 1;
-
-
-                            // http://uihacker.blogspot.tw/2011/01/android-touchmove-event-bug.html
-                            // http://code.google.com/p/android/issues/detail?id=5491
-                            if( navigator.userAgent.match(/Android/i) ) {
-                              e.preventDefault();
-                            }
-
-                            if(animatingSlideChange) {
-                                console.log('slidify.js:279  touchstart   animatingSlideChange already, so dont start another');
-                                return;
-                            }
 
                             console.log('slidify.js:336  touchstart  at ' + touchToString({ x: startX, y:startY }) + '  currSlideNum: ' + currSlideNum + '  windowScrollStart: ' + windowScrollStart + '   usedOneFinger: ' + usedOneFinger + '   animatingSlideChange: ' + animatingSlideChange);
 
