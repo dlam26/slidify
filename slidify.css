@@ -1,9 +1,15 @@
 .slidified {
     position:relative;
+    overflow:hidden;
 }
 .slidified .slide {
     display:none;
     left:0px;
+
+    /*                  TODO!  specify slide height/width -->
+    height: 500px;
+    width: 800px;
+    */
 }
 .slidified .slide.active {
     display:block;
@@ -16,5 +22,3 @@
 .slidified .control.on {
     color:cornflowerblue;
 }
-
-
