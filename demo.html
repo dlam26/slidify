@@ -1,7 +1,4 @@
-
-
 <html>
-
     <head>
         <title> slidify.js demo! </title>
         <!--
@@ -10,11 +7,12 @@
         <script type="text/javascript" src="jquery-1.8.3.js"></script>
 
         <!--
-            this script is to fix for iOS 6 touch weirdness, see wgausmann's comment here
-            https://github.com/mattbryson/TouchSwipe-Jquery-Plugin/issues/30
+            this script is to fix for iOS 6 touch weirdness, see 
+            wgausmann's comment here...
+              https://github.com/mattbryson/TouchSwipe-Jquery-Plugin/issues/30
 
-            taken from https://gist.github.com/3755461
-         -->
+            (taken from https://gist.github.com/3755461)
+        -->
         <script type="text/javascript" src="ios6-timers.js"></script>
 
         <script type="text/javascript" src="slidify.js"></script>
@@ -26,7 +24,8 @@
                 margin: 50px 100px;
                 font-family:sans-serif;
             }
-            .slidified, .slide {
+            .slidified, 
+            .slide {
                 height: 500px;
                 width: 800px;
             }
@@ -95,7 +94,10 @@
 
             $(document).ready(function() {
  //             $('.slidified').slidify({ duration: DURATION });
-                $('.slidified').slidify({ 'touch':'slides-with-finger', 'duration':DURATION });
+                $('.slidified').slidify({ 
+                    'touch':'slides-with-finger', 
+                    'duration':DURATION 
+                });
             });
         </script>
     </head>
@@ -108,22 +110,15 @@
 
             <div class="page_control">
                 <a class="slide_left">left</a>
-
-                &nbsp; &nbsp; &nbsp;
-
+                &nbsp; &nbsp; &nbsp; 
                 <span class="control on">&bull;</span>
                 <span class="control">&bull;</span>
                 <span class="control">&bull;</span>
                 <span class="control">&bull;</span>
                 <span class="control">&bull;</span>
-
                 &nbsp; &nbsp; &nbsp;
-
                 <a class="slide_right">right</a>
-
-
             </div>
-
 
             <div class="slides">
 
@@ -250,12 +245,19 @@
         <br/>
         <br/>
 
-        <!--
-        <div class="slidified">
+        <h1>
+            Try to support design of a "partial" slide!
+        </h1>
+
+        <div class="slidified partial">
 
             <div class="page_control">
                 <a class="slide_left">left</a>
-                &nbsp; | &nbsp;
+                &nbsp; &nbsp;
+                <span class="control on">&bull;</span>
+                <span class="control">&bull;</span>
+                <span class="control">&bull;</span>
+                &nbsp; &nbsp;
                 <a class="slide_right">right</a>
             </div>
 
@@ -288,6 +290,9 @@
                 </div>
             </div>
         </div>
-        -->
+
+        <br/> <br/> <br/> <br/>
+        <br/> <br/> <br/> <br/>
+
     </body>
 </html>

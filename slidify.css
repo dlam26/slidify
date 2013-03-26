@@ -5,11 +5,10 @@
 .slidified .slide {
     display:none;
     left:0px;
-
-    /*                  TODO!  specify slide height/width -->
-    height: 500px;
-    width: 800px;
-    */
+    /*  
+        TODO  specify a fixed slide height & width 
+              for the slides in an external stylesheet! 
+     */
 }
 .slidified .slide.active {
     display:block;
@@ -21,4 +20,23 @@
 }
 .slidified .control.on {
     color:cornflowerblue;
+}
+
+
+.slidified.partial {
+    overflow:hidden;
+    width:1000px;
+    height:500px;
+}
+.slidified.partial .slides {
+    width: 999999px;            /*   FIXME  <---  probably better solution for this  */
+    position: relative;
+}
+.slidified.partial .slide {
+    display:block;
+    float:left;
+    position:relative;
+}
+.slidified.partial .slide.active {
+    position:static;   /* e.g. the default position: value */
 }

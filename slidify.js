@@ -63,8 +63,13 @@
 //                 console.log('slidify.js:64  initiating slidified slider #' + index + ' with touch style, ' + opts.touch);
 
                 var slider = $(this);  // holds the container for the slider
+                var sliderSlides = slider.find(opts.slides);
 
-                // the first slide should be "active", so add a class to it
+                //  3/24/13  trying to support a design in which 
+                //  "non-active" slides can be visible to the user
+                var isPartial = slider.hasClass('partial');
+
+                // the very first slide should be "active", so indicate that
                 slider.find(opts.slide + ':first').addClass(ACTIVE);
 
                 // set the width of an actual slide, defaulting
@@ -77,12 +82,13 @@
 
                 // constants
                 var FIRST_SLIDE_NUMBER = 1;
-                var LAST_SLIDE_NUMBER = slider.find(opts.slide).size();   // XXX
+                var LAST_SLIDE_NUMBER = slider.find(opts.slide).size(); //XXX
                 var LEFT  = 'left';
                 var RIGHT = 'right';
                 var IS_TOUCH_SIMPLE = opts.touch == TOUCH_SIMPLE;
                 var IS_TOUCH_NONE = opts.touch == TOUCH_NONE;
-                var IS_TOUCH_SLIDES_WITH_FINGER = opts.touch == TOUCH_SLIDES_WITH_FINGER;
+                var IS_TOUCH_SLIDES_WITH_FINGER =
+                    opts.touch == TOUCH_SLIDES_WITH_FINGER;
 
                 //should be set to true somewhere if...
                 //  1. we're on the last slide and the right arrow is pressed
@@ -97,10 +103,6 @@
                 makeSwipable();
                 setSlideNumbers();
 
-
-                var leftArrow  = slider.find(opts.left);
-                var rightArrow = slider.find(opts.right);
-
                 function doAnimate(direction, doAnimateCallback) {
 
                     doAnimateCallback = doAnimateCallback || function(){};
@@ -113,22 +115,19 @@
                     // 10/4/12  the CSS is one-indexed right etc. etc.
                     // 12/18/12  old method, before
                     //var currSlideNum = slider.find(opts.slide + '.' + ACTIVE).index() + 1;
-
-
                     var currSlideStart = {};
                     var currSlideEnd   = {};
                     var nextSlideStart = {};
                     var nextSlideEnd   = {};
 
-                    //  set up the slide/carousel animation based on the
-                    //  given direction we want to go
+                    //  now set up the slide/carousel animation based on the
+                    //  direction we want to go -->
 
                     // we always want the "next" slide to be the current
                     nextSlideEnd['left'] = "0px";
 
                     switch(direction) {
                         case LEFT:
-
                             if(currSlideNum <= FIRST_SLIDE_NUMBER) {
 
                                 console.log('slidify.js:120  at start of slides!  currSlideNum: ' + currSlideNum + '   FIRST_SLIDE_NUMBER: ' + FIRST_SLIDE_NUMBER);
@@ -137,7 +136,8 @@
                                     nextSlideNum = LAST_SLIDE_NUMBER;
                                 }
                                 else {
-                                    return;   // XXX  don't loop, so stop right away!
+                                    // XXX  don't loop, so stop right away!
+                                    return;
                                 }
                             }
                             else {
@@ -151,7 +151,6 @@
                             break;
 
                         case RIGHT:
-
                             if(currSlideNum  >= LAST_SLIDE_NUMBER) {
                                 console.log('slidify.js:121  at end of slides!   currSlideNum: ' + currSlideNum + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER);
 
@@ -187,46 +186,116 @@
 
                     console.log('slidify.js:152  doAnimate() ' + direction + '   selectorCurrent: ' + selectorCurrent + '   selectorNext: ' + selectorNext + '    currSlideEnd.left: ' + currSlideEnd.left + '    nextSlideEnd.left: ' + nextSlideEnd.left + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER + '   currSlideNum: ' + currSlideNum + '   nextSlideNum: ' + nextSlideNum + '   currSlide.size(): ' + currSlide.size() + '   nextSlide.size(): ' + nextSlide.size());
 
+                    if(isPartial) {
 
-                    // slide OUT the current slide and slide IN the new one
-                    //
-                    // the below sets the CSS position of the current slide to
-                    // the right or left of the viewport, and then slides back in
-                    // the new slide to show into the viewport
-                    //
-                    currSlide.animate(currSlideEnd, {
-                        duration: opts.duration,
-                        complete: function() {
+                        var cssLeft = parseInt(sliderSlides.css('left'), 10);
+                        var newCssLeft;
+                        var firstSlide = slider.find(opts.slide + ':first');
+                        var lastSlide = slider.find(opts.slide + ':last');
 
-                            console.log('slidify.js:203  doAnimate()  currSlide.animate callback!  REMOVING ACTIVE CLASS  -> ' + $(this).attr('class'));
+                        if(direction == LEFT) {
+                            newCssLeft = cssLeft + SLIDE_WIDTH;
 
-                            // since removing the ACTIVE class will make it disappear,
-                            // remove it *after* its slid out
-                            $(this).removeClass(ACTIVE);
-                            $(this).removeAttr('style');
+                            if(currSlide.prev(opts.slide).size() === 0) {
+                                // we need to rotate the last slide to be
+                                // situated "in front" of the first, so that
+                                // it appears to be circling around
+
+                                console.log('slidify.js:199  need to ROTATE last slide to the front!');
+
+                                lastSlide.css('position', 'absolute')
+                                    .css('left', -SLIDE_WIDTH)
+                                    .insertBefore(firstSlide);
+
+                            }
                         }
-                    });
+                        else {
+                            newCssLeft = cssLeft - SLIDE_WIDTH;
 
-                    nextSlide.addClass(ACTIVE).css(nextSlideStart).animate(nextSlideEnd, {
-                        duration: opts.duration,
-                        complete: function() {
+                            if(nextSlide.next(opts.slide).size() === 0) {
+                                console.log('slidify.js:206   need to ROTATE first slide to the end!');
 
-                            // FIXME if you start the animation and then sorta scroll
-                            //       the page such that the slider goes off the screen,
-                            //       these (important) callbacks might not run!
-
-                            console.log('slidify.js:220  doAnimate()  nextSlide.animate callback!  cleaning up slider state...');
-
-                            // ...because we disable it at the top of doAnimate
-                            // to prevent next/prev click spam
-                            enableSlidePageControlButtons();
-
-                            opts.sliderChangedCallback(currSlideNum, nextSlideNum);
-
-                            doAnimateCallback();
+                                firstSlide.css('position', 'absolute')
+                                    .css('left', SLIDE_WIDTH)
+                                    .insertAfter(lastSlide);
+                            }
                         }
-                    });
 
+
+                        sliderSlides.animate({ left: newCssLeft }, {
+                            duration: opts.duration,
+                            complete: function() {
+                                enableSlidePageControlButtons();
+                                currSlide.removeClass(ACTIVE);
+                                nextSlide.addClass(ACTIVE);
+                                opts.sliderChangedCallback(currSlideNum,
+                                                           nextSlideNum);
+                                doAnimateCallback();
+
+                                if(direction != LEFT) {
+                                    // going right, so we animate the
+                                    // current slide off to the left, and
+                                    // then circle it to the back of the line
+                                    currSlide.css('position', 'absolute')
+                                        .css('left', -SLIDE_WIDTH)
+                                        .insertAfter(lastSlide);
+
+                                }
+
+
+                                // clean up CSS which was used purely to 
+                                // perform a good looking animation
+                                sliderSlides.attr('style', '');
+                                nextSlide.attr('style', '');
+                                currSlide.attr('style', '');
+
+
+                                console.log('done!  newCssLeft: ' + newCssLeft);
+                                console.log('----------------------------------------------------------------------');
+                            }
+                        });
+
+                    }
+                    else {
+                        // slide OUT the current slide and slide IN the new one
+                        //
+                        // the below sets the CSS position of the current slide
+                        // to the right or left of the viewport, and then slides
+                        // back in the new slide to show into the viewport
+                        currSlide.animate(currSlideEnd, {
+                            duration: opts.duration,
+                            complete: function() {
+
+                                console.log('slidify.js:203  doAnimate()  currSlide.animate callback!  REMOVING ACTIVE CLASS  -> ' + $(this).attr('class'));
+
+                                // since removing the ACTIVE class will make it 
+                                // disappear, remove it *after* its slid out
+                                $(this).removeClass(ACTIVE);
+                                $(this).removeAttr('style');
+                            }
+                        });
+
+                        nextSlide.addClass(ACTIVE).css(nextSlideStart).animate(nextSlideEnd, {
+                            duration: opts.duration,
+                            complete: function() {
+
+                                // FIXME if you start the animation and then
+                                // sorta scroll the page such that the slider
+                                // goes off the screen, these (important)
+                                // callbacks might not run!
+
+                                console.log('slidify.js:220  doAnimate()  nextSlide.animate callback!  cleaning up slider state...');
+
+                                // ...because we disable it at the top of doAnimate
+                                // to prevent next/prev click spam
+                                enableSlidePageControlButtons();
+
+                                opts.sliderChangedCallback(currSlideNum, nextSlideNum);
+
+                                doAnimateCallback();
+                            }
+                        });
+                    }
 
                     setSlideNumbers(nextSlideNum);
 
@@ -235,10 +304,12 @@
                 } // end of doAnimate()
 
 
-                //  Called on
-                //      1.  first slidify initialization
-                //      2.  after a slide change is completed  (in doAnimate)
-                //
+                /*
+                    Set state variables for the currente slidified thingy. 
+                    Called on
+                        1.  first slidify initialization
+                        2.  after a slide change is completed  (in doAnimate)
+                 */
                 function setSlideNumbers(withNewCurrentSlideNumber) {
 
                     if(withNewCurrentSlideNumber)
@@ -258,12 +329,12 @@
                         slideOnLeftNum = currSlideNum - 1;
                     }
 
-                    console.log('slidify.js:256  setSlideNumbers()   left: ' + slideOnLeftNum + '   curr: ' + currSlideNum + '   right: ' + slideOnRightNum);
+//                     console.log('slidify.js:256  setSlideNumbers()   left: ' + slideOnLeftNum + '   curr: ' + currSlideNum + '   right: ' + slideOnRightNum);
 
                 }
 
                 function updatePageControl() {
-                    console.log('slidify.js;264  updatePageControl()  ' + (currSlideNum - 1));
+//                     console.log('slidify.js;264  updatePageControl()  ' + (currSlideNum - 1));
                     var pageControls = slider.find(opts.pagecontrol + ' .control');
                     pageControls.removeClass('on').eq(currSlideNum - 1).addClass('on');
                 }
@@ -309,14 +380,14 @@
                     /*
                          Binds touch events to support finger swipe/panning
                          on the carousel.  This function uses a bunch of
-                         global 'state' variables which are set at the first
-
-
-                         e.g. http://developer.apple.com/library/ios/#documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html
+                         global 'state' variables to coordinate how stuff 
+                         will be animated.
 
                          event.preventDefault() here will prevent the slider
                          and or default browser panning action from doing
                          anything at all  (so you probably dont want this)
+
+                         http://developer.apple.com/library/ios/#documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html
                     */
 
                     // state variables
@@ -336,18 +407,15 @@
 
                     var usedOneFinger;
 
-                    // [0] because slider is a jQuery object
-                    //      XXX FIXME  what if no slides???
-                    var sliderSlides = slider.find(opts.slides)[0];
-
-                    if(!sliderSlides) {
+                    // [0] because sliderSlides is a jQuery object
+                    if(!sliderSlides[0]) {
                         console.log('slidify.js:257  doh! slidify needs a child ' + opts.slides + ' element to work!');
                         return;
                     }
 
                     if(!IS_TOUCH_NONE) {
 
-                        sliderSlides.addEventListener('touchstart', function(e) {
+                        sliderSlides[0].addEventListener('touchstart', function(e) {
 
                             if(animatingSlideChange) {
                                 console.log('slidify.js:279  touchstart   animatingSlideChange already, so dont start another');
@@ -402,7 +470,7 @@
                         }, false);
 
 
-                        sliderSlides.addEventListener('touchmove', function(e) {
+                        sliderSlides[0].addEventListener('touchmove', function(e) {
 
                             if(!usedOneFinger)
                                 return;
@@ -496,7 +564,7 @@
                         }, false);
 
 
-                        sliderSlides.addEventListener('touchend', function(e) {
+                        sliderSlides[0].addEventListener('touchend', function(e) {
 
                             var removedAllFingers = e.touches.length === 0;
 
@@ -706,9 +774,7 @@
                 function getSlideSelector(slideNum) {
                     return '.slide' + slideNum;
                 }
-
             });
         }
     });
-
 })( jQuery );

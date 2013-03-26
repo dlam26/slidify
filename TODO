@@ -45,5 +45,8 @@
         http://forum.jquery.com/topic/animate-buggy-in-ios-6-jellybean
 
 
-    9.  get rid of or refactor doAnimate()   ...its only used for TOUCH_SIMPLE
+    7.  get rid of or refactor doAnimate()   ...its only used for TOUCH_SIMPLE
         and now I kinda have duplicate code to do TOUCH_SLIDES_WITH_FINGER etc.
+
+    8.  support/test/implement touch for the isPartial block
+
