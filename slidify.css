@@ -1,6 +1,6 @@
 .slidified {
     position:relative;
-    overflow:hidden;
+    /*  overflow:hidden;   */      /*  <--- dosen't support design which involves stuff being to the left and right of the slides!  */
 }
 .slidified .slide {
     display:none;
@@ -20,13 +20,6 @@
 }
 .slidified .control.on {
     color:cornflowerblue;
-}
-
-
-.slidified.partial {
-    overflow:hidden;
-    width:1000px;
-    height:500px;
 }
 .slidified.partial .slides {
     width: 999999px;            /*   FIXME  <---  probably better solution for this  */

@@ -55,7 +55,7 @@
                 'looped': true,            // whether or not moving next from the last slide goes to the first
                 'touch': TOUCH_SIMPLE,
                 'duration': 400,           // animate duration  http://api.jquery.com/animate/    400 is the default duration for jquery animate!
-                'sliderChangedCallback': function(currSlideNumber, newSlideNumber) {}  // called when the left/right arrow buttons are clicked
+                'sliderChangedCallback': function(currSlide, nextSlide) {}  // called when the left/right arrow buttons are clicked
             }, options);
 
             return this.each(function(index, value) {
@@ -228,8 +228,8 @@
                                 enableSlidePageControlButtons();
                                 currSlide.removeClass(ACTIVE);
                                 nextSlide.addClass(ACTIVE);
-                                opts.sliderChangedCallback(currSlideNum,
-                                                           nextSlideNum);
+
+                                opts.sliderChangedCallback(currSlide, nextSlide);
                                 doAnimateCallback();
 
                                 if(direction != LEFT) {
@@ -242,16 +242,11 @@
 
                                 }
 
-
                                 // clean up CSS which was used purely to 
                                 // perform a good looking animation
                                 sliderSlides.attr('style', '');
                                 nextSlide.attr('style', '');
                                 currSlide.attr('style', '');
-
-
-                                console.log('done!  newCssLeft: ' + newCssLeft);
-                                console.log('----------------------------------------------------------------------');
                             }
                         });
 
@@ -290,7 +285,7 @@
                                 // to prevent next/prev click spam
                                 enableSlidePageControlButtons();
 
-                                opts.sliderChangedCallback(currSlideNum, nextSlideNum);
+                                opts.sliderChangedCallback(currSlide, nextSlide);
 
                                 doAnimateCallback();
                             }

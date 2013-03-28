@@ -50,3 +50,4 @@
 
     8.  support/test/implement touch for the isPartial block
 
+    9.  log a warning if couldn't find bind next/prev arrow buttons,  e.g.  `opts.left` and `opts.right`
