@@ -184,11 +184,14 @@
                     var nextSlide  = slider.find(selectorNext);
 
 
-                    console.log('slidify.js:152  doAnimate() ' + direction + '   selectorCurrent: ' + selectorCurrent + '   selectorNext: ' + selectorNext + '    currSlideEnd.left: ' + currSlideEnd.left + '    nextSlideEnd.left: ' + nextSlideEnd.left + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER + '   currSlideNum: ' + currSlideNum + '   nextSlideNum: ' + nextSlideNum + '   currSlide.size(): ' + currSlide.size() + '   nextSlide.size(): ' + nextSlide.size());
+                    console.log('slidify.js:152  doAnimate() ' + direction + '   selectorCurrent: ' + selectorCurrent + '   selectorNext: ' + selectorNext + '    currSlideEnd.left: ' + currSlideEnd.left + '    nextSlideEnd.left: ' + nextSlideEnd.left + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER + '   currSlideNum: ' + currSlideNum + '   nextSlideNum: ' + nextSlideNum);
 
                     if(isPartial) {
 
-                        var cssLeft = parseInt(sliderSlides.css('left'), 10);
+                        //  3/28/13  Chrome here can return "auto" for the .css('left') call!   http://stackoverflow.com/questions/4278148/jquery-cssleft-returns-auto-instead-of-actual-value-in-chrome
+                        //
+                        var cssLeft =
+                            parseInt(sliderSlides.css('left'), 10) || 0;
                         var newCssLeft;
                         var firstSlide = slider.find(opts.slide + ':first');
                         var lastSlide = slider.find(opts.slide + ':last');
@@ -221,6 +224,8 @@
                             }
                         }
 
+
+                        console.log('sliderSlides   class: ' + sliderSlides.attr('class') + '   style: ' + sliderSlides.attr('style') + '   newCssLeft: ' + newCssLeft + '   cssLeft: ' + cssLeft );
 
                         sliderSlides.animate({ left: newCssLeft }, {
                             duration: opts.duration,
