@@ -225,7 +225,7 @@
                         }
 
 
-                        console.log('sliderSlides   class: ' + sliderSlides.attr('class') + '   style: ' + sliderSlides.attr('style') + '   newCssLeft: ' + newCssLeft + '   cssLeft: ' + cssLeft );
+                        console.log('slidify.js:228  doAnimate()   class: ' + sliderSlides.attr('class') + '   style: ' + sliderSlides.attr('style') + '   newCssLeft: ' + newCssLeft + '   cssLeft: ' + cssLeft );
 
                         sliderSlides.animate({ left: newCssLeft }, {
                             duration: opts.duration,
@@ -350,13 +350,13 @@
 
                 function enableSlidePageControlButtons() {
 
-                    slider.find(opts.left).click(function() {
+                    slider.find(opts.left).unbind('click').click(function() {
                         console.log('slidify.js:208  Clicked left');
                         doAnimate(LEFT);
                         updatePageControl();
                     });
 
-                    slider.find(opts.right).click(function() {
+                    slider.find(opts.right).unbind('click').click(function() {
                         console.log('slidify.js:212  Clicked right');
                         doAnimate(RIGHT);
                         updatePageControl();
