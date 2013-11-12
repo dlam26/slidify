@@ -13,7 +13,6 @@
 .slidified .slide.active {
     display:block;
     position:absolute;
-    left:0px;
 }
 .slidified .control {
     font-size:48px;
@@ -32,4 +31,18 @@
 }
 .slidified.partial .slide.active {
     position:static;   /* e.g. the default position: value */
+}
+
+
+.slidified.partial.responsive .slides {
+    width:auto;
+    max-width:1200px;
+}
+.slidified.partial.responsive .slide {
+    width:30.6%;
+    position:absolute;
+
+   transform: translate3d(0px, 0px, 0px);
+   transition-duration: 0.8s;
+   transition-timing-function: ease;
 }

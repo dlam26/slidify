@@ -17,12 +17,12 @@
 
         <script type="text/javascript" src="slidify.js"></script>
         <link href="slidify.css" rel="stylesheet"/>
+        <link href="demo.css" rel="stylesheet"/>
 
         <!-- demo specific CSS stuff -->
         <style type="text/css"> 
-            body {
-                margin: 50px 100px;
-                font-family:sans-serif;
+            .slidified {
+                overflow:hidden;
             }
             .slidified, 
             .slide {
@@ -57,25 +57,21 @@
             }
             div.slides div.page_control a {
                 position:absolute;
-                top:50%;
+                /* top:50%; */
                 z-index:9999;
                 color:white;
             }
             div.slides div.page_control .slide_left {
                 position:absolute;
                 left:15px;
+                top:200px;
                 color:orange;
             }
             div.slides div.page_control .slide_right {
                 position:absolute;
                 right:15px;
+                top:200px;
                 color:orange;
-            }
-            a {
-                cursor:pointer;
-                color:blue;
-                text-decoration:none;
-                font-size:64px;
             }
             div.loren-ipsum {
 
@@ -89,20 +85,25 @@
         </style>
 
         <script type="text/javascript">
-
-            var DURATION = 400;
-
             $(document).ready(function() {
- //             $('.slidified').slidify({ duration: DURATION });
                 $('.slidified').slidify({ 
                     'touch':'slides-with-finger', 
-                    'duration':DURATION 
+                    'duration': 400 
                 });
             });
         </script>
+
     </head>
 
     <body>
+        <ul class="menu">
+            <li>  <a href="demo.html">demo.html</a> </li>
+            <li>  <a href="demo-responsive.html">demo-responsive.html</a> </li>
+        </ul>
+
+        <br/>
+        <br/>
+        <br/>
 
         <a style="float:right" onclick="location.reload(true)">reload</a>
 

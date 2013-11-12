@@ -1,0 +1,30 @@
+/*  demo specific CSS stuff */
+
+body {
+    margin: 50px 100px;
+    font-family:sans-serif;
+}
+a {
+    cursor:pointer;
+    color:blue;
+    text-decoration:none;
+    font-size:64px;
+}
+
+ul.menu { 
+    position:absolute;
+    right:20px;
+    top:10px;
+}
+ul.menu li { 
+    float:left;
+    list-style-type: none;
+    margin-right:10px;
+    margin-bottom:20px;
+}
+ul.menu li a { 
+    font-size: 16px;
+}
+ul.menu li a:hover { 
+    color:orange;
+}

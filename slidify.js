@@ -3,6 +3,7 @@
 //
 //
 // (thanks to Graham King a.k.a darkcoding who basically wrote the original code which I repackaged into a plugin!)
+//
 
 
 //
@@ -13,8 +14,7 @@
 (function($) {
     // see http://docs.jquery.com/Plugins/Authoring etc.
 
-    $.fn.extend({
-
+    $.fn.extend({ 
         /*
             Creates a carousel slider by binding certain
             descendent elements with actions:
@@ -48,14 +48,18 @@
             // Create some defaults, extending them with any options that were provided
             var opts = $.extend( {
                 'slide': '.slide',         // selector for each slide
-                'slides': '.slides',       // selector for the container holding slides
+                'slides': '.slides',       // selector for the container *holding* slides
                 'left':  '.slide_left',    // selector for the left arrow button
                 'right': '.slide_right',   // selector for the right arrow button
                 'pagecontrol': '.page_control',   // selector for the page control
                 'looped': true,            // whether or not moving next from the last slide goes to the first
                 'touch': TOUCH_SIMPLE,
-                'duration': 400,           // animate duration  http://api.jquery.com/animate/    400 is the default duration for jquery animate!
-                'sliderChangedCallback': function(currSlide, nextSlide) {}  // called when the left/right arrow buttons are clicked
+                'duration': 400,           // animate duration, (400 is the default duration for jquery animate)
+                
+                // callback for when the left/right arrow buttons are clicked
+                // 'currSlide' and 'nextSlide' are the respective DOM nodes
+                'sliderChangedCallback': function(currSlide, nextSlide) {}  
+
             }, options);
 
             return this.each(function(index, value) {
@@ -68,9 +72,19 @@
                 //  3/24/13  trying to support a design in which 
                 //  "non-active" slides can be visible to the user
                 var isPartial = slider.hasClass('partial');
+                var isResponsive = slider.hasClass('responsive');
 
-                // the very first slide should be "active", so indicate that
-                slider.find(opts.slide + ':first').addClass(ACTIVE);
+                if(isResponsive) {  // XXX  if a billion slides, this will die 
+                    var slideList = sliderSlides.find('.slide');
+                    slideList.eq(0).addClass('at-bat');
+                    slideList.eq(1).addClass('on-deck');
+                    slideList.eq(2).addClass('in-the-hole');
+                    slideList.eq(3).addClass('last-up');
+                }
+                else {
+                    // the very first slide should be "active", so indicate that
+                    slider.find(opts.slide + ':first').addClass(ACTIVE);
+                }
 
                 // set the width of an actual slide, defaulting
                 // to 970 pixels if we can't find any!
@@ -100,10 +114,10 @@
                 var currSlide, nextSlide, slideOnLeft, slideOnRight;
 
                 enableSlidePageControlButtons();
-                makeSwipable();
                 setSlideNumbers();
+                makeSwipable();
 
-                function doAnimate(direction, doAnimateCallback) {
+                function doAnimate(direction, doAnimateCallback) {//{{{
 
                     doAnimateCallback = doAnimateCallback || function(){};
 
@@ -124,7 +138,7 @@
                     //  direction we want to go -->
 
                     // we always want the "next" slide to be the current
-                    nextSlideEnd['left'] = "0px";
+                    nextSlideEnd.left = "0px";
 
                     switch(direction) {
                         case LEFT:
@@ -145,9 +159,8 @@
                             }
 
                             // this moves the slides left
-                            currSlideEnd['left']   = SLIDE_WIDTH_PIXELS;
-                            nextSlideStart['left'] = '-' + SLIDE_WIDTH_PIXELS;
-
+                            currSlideEnd.left   = SLIDE_WIDTH_PIXELS;
+                            nextSlideStart.left = '-' + SLIDE_WIDTH_PIXELS;
                             break;
 
                         case RIGHT:
@@ -166,9 +179,8 @@
                             }
 
                             // ...and this moves the slides right!
-                            currSlideEnd['left']   = '-' + SLIDE_WIDTH_PIXELS;
-                            nextSlideStart['left'] = SLIDE_WIDTH_PIXELS;
-
+                            currSlideEnd.left   = '-' + SLIDE_WIDTH_PIXELS;
+                            nextSlideStart.left = SLIDE_WIDTH_PIXELS;
                             break;
 
                         default:
@@ -204,19 +216,17 @@
                                 // situated "in front" of the first, so that
                                 // it appears to be circling around
 
-                                console.log('slidify.js:199  need to ROTATE last slide to the front!');
-
+                                console.log('slidify.js:199  ROTATE last slide to the front!');
                                 lastSlide.css('position', 'absolute')
                                     .css('left', -SLIDE_WIDTH)
                                     .insertBefore(firstSlide);
-
                             }
                         }
                         else {
                             newCssLeft = cssLeft - SLIDE_WIDTH;
 
                             if(nextSlide.next(opts.slide).size() === 0) {
-                                console.log('slidify.js:206   need to ROTATE first slide to the end!');
+                                console.log('slidify.js:206  ROTATE first slide to the end!');
 
                                 firstSlide.css('position', 'absolute')
                                     .css('left', SLIDE_WIDTH)
@@ -229,6 +239,8 @@
 
                         sliderSlides.animate({ left: newCssLeft }, {
                             duration: opts.duration,
+                            queue: false,
+                            easing: 'swing',
                             complete: function() {
                                 enableSlidePageControlButtons();
                                 currSlide.removeClass(ACTIVE);
@@ -244,7 +256,6 @@
                                     currSlide.css('position', 'absolute')
                                         .css('left', -SLIDE_WIDTH)
                                         .insertAfter(lastSlide);
-
                                 }
 
                                 // clean up CSS which was used purely to 
@@ -255,8 +266,15 @@
                             }
                         });
 
+                        if(isResponsive) {
+                            nextSlide.animate({ width: '63.6%' }, {
+                                queue: false
+                            });
+                        }
                     }
                     else {
+                        console.log('slidify.js:264    regular!');
+
                         // slide OUT the current slide and slide IN the new one
                         //
                         // the below sets the CSS position of the current slide
@@ -301,19 +319,100 @@
 
                     console.log('slidify.js:241  doAnimate()  finished!  currSlideNum: ' + currSlideNum);
 
-                } // end of doAnimate()
+                } // end of doAnimate()      //}}}
+
+                function doCSSAnimationTransition(direction, doAnimateCallback) {
+
+                    // XXX TODO  relies on an "out of scope" slideList variable up there ^
+
+                    var selectorCurrent = getSlideSelector(currSlideNum);
+                    var currSlide  = slider.find(selectorCurrent);
+
+                    console.log('slidify.js:325   doCSSAnimationTransition()   currSlide is... ' + currSlide.attr('class') + '   currSlideNum: ' + currSlideNum + '   slideList.length: ' + slideList.length + '   direction: ' + direction);
+
+                    var states = ['at-bat', 'on-deck', 'in-the-hole', 'last-up'];
+                    slideList.removeClass('active ' + states.join(' '));
+
+                    var i = 0, cursor;
+
+                    while(i < states.length) {
+
+                        /*
+                            Go through the next or previous four slides, and
+                            append a class from  'states' for each iteration.
+
+                            If the end (or start) is reached, loop to the 
+                            first (or last) slide
+                        */
+                        if(direction == LEFT) {
+
+                            if(currSlideNum - i < 0) {
+                                cursor = slideList.length;
+                            }
+                            else {
+                                cursor = currSlideNum - i;
+                            }
+                        }
+                        else {
+//                             console.log('slidify.js:356   slideList.length: ' + slideList.length + '   currSlideNum: '  + currSlideNum + '  i: ' + i +   '   currSlideNum + i: ' + (currSlideNum + i));
+
+                            if(slideList.length <= currSlideNum + i) {
+//                                 cursor = 0;
+                                cursor = (currSlideNum + i) - slideList.length;
+                            }
+                            else {
+                                cursor = currSlideNum + i;
+                            }
+
+                        }
+
+                        console.log('slidify.js:368   setting \'' + states[i] + '\' at cursor ' + cursor);
+
+                        slideList.eq(cursor).addClass(states[i]);
+                        i += 1;
+                    }
 
 
-                /*
-                    Set state variables for the currente slidified thingy. 
-                    Called on
-                        1.  first slidify initialization
-                        2.  after a slide change is completed  (in doAnimate)
-                 */
-                function setSlideNumbers(withNewCurrentSlideNumber) {
+                    // increment/decrement currSlideNum looping to the
+                    // start or end as needed
+                    if(direction == LEFT) {
 
-                    if(withNewCurrentSlideNumber)
-                        currSlideNum = withNewCurrentSlideNumber;
+                        if(currSlideNum - 1 < 0) {
+                            console.log('aaa');
+                            setSlideNumbers(slideList.length);
+                        }
+                        else {
+                            console.log('bbb');
+                            setSlideNumbers(currSlideNum - 1);
+                        }
+                    }
+                    else {
+
+                        if(currSlideNum + 1 > slideList.length) {
+                            console.log('ccc');
+                            setSlideNumbers(0);
+                        }
+                        else {
+                            console.log('ddd');
+                            setSlideNumbers(currSlideNum + 1);
+                        }
+                    }
+
+                }
+
+                function setSlideNumbers(newCurrentSlideNumber) {//{{{
+                    /*
+                        Set state variables for the current slidified thingy. 
+
+                        Called on
+                            1.  first slidify initialization
+                            2.  after a slide change is completed  (in doAnimate)
+
+                        IMPORTANT: this comparison of `=== 0` is really important!
+                                   0 represents the index of the very first slide!
+                     */
+                    if(newCurrentSlideNumber || newCurrentSlideNumber === 0)
+                        currSlideNum = newCurrentSlideNumber;
 
                     if(!currSlideNum || currSlideNum == FIRST_SLIDE_NUMBER) {
                         currSlideNum = 1;
@@ -331,52 +430,60 @@
 
 //                     console.log('slidify.js:256  setSlideNumbers()   left: ' + slideOnLeftNum + '   curr: ' + currSlideNum + '   right: ' + slideOnRightNum);
 
-                }
+                }//}}}
 
-                function updatePageControl() {
-//                     console.log('slidify.js;264  updatePageControl()  ' + (currSlideNum - 1));
+                function updatePageControl() {//{{{
                     var pageControls = slider.find(opts.pagecontrol + ' .control');
                     pageControls.removeClass('on').eq(currSlideNum - 1).addClass('on');
-                }
+                }//}}}
 
-                function toggleArrowPressed(e) {
+                function toggleArrowPressed(e) {//{{{
                     if(e.type == 'mousedown') {
                         $(this).addClass('pressed');
                     }
                     else {
                         $(this).removeClass('pressed');
                     }
-                }
+                }//}}}
 
-                function enableSlidePageControlButtons() {
+                function enableSlidePageControlButtons() {//{{{
 
                     slider.find(opts.left).unbind('click').click(function() {
-                        console.log('slidify.js:208  Clicked left');
-                        doAnimate(LEFT);
+//                         console.log('slidify.js:208  Clicked left');
+                        if(isResponsive) {
+                            doCSSAnimationTransition(LEFT);
+                        }
+                        else {
+                            doAnimate(LEFT);
+                        }
                         updatePageControl();
                     });
 
                     slider.find(opts.right).unbind('click').click(function() {
-                        console.log('slidify.js:212  Clicked right');
-                        doAnimate(RIGHT);
+//                         console.log('slidify.js:212  Clicked right');
+                        if(isResponsive) {
+                            doCSSAnimationTransition(RIGHT);
+                        }
+                        else {
+                            doAnimate(RIGHT);
+                        }
                         updatePageControl();
                     });
 
                     // clicking on a arrow buttons should show a i-am-pressed state
                     slider.find([opts.left, opts.right].join(',')).bind('mousedown mouseup mouseout', toggleArrowPressed);
-                }
+                }//}}}
 
-
-                function disableNextPrevButtons() {
+                function disableNextPrevButtons() {//{{{
                     slider.find([opts.left, opts.right].join(',')).unbind('click');
-                }
+                }//}}}
 
-                function getWindowScroll() {
+                function getWindowScroll() {//{{{
                     //copied from jquery-1.8.3.js:9266
                     return window.pageYOffset || document.documentElement.scrollTop;
-                }
+                }//}}}
 
-                function makeSwipable() {
+                function makeSwipable() {//{{{
                     /*
                          Binds touch events to support finger swipe/panning
                          on the carousel.  This function uses a bunch of
@@ -762,19 +869,20 @@
 
                     } //   if(!IS_TOUCH_NONE) {
 
-
                 } // makeSwipable() end
+//}}}
 
-
-                function touchToString(t) {
+                function touchToString(t) {//{{{
                     return '( x:' + t.x + ', y:' + t.y + ' )';
-                }
+                }//}}}
 
-
-                function getSlideSelector(slideNum) {
+                function getSlideSelector(slideNum) {//{{{
                     return '.slide' + slideNum;
-                }
+                }//}}}
+
             });
         }
     });
 })( jQuery );
+
+// vi: foldmethod=marker

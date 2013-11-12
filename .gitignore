@@ -4,3 +4,4 @@
 *.un*
 *.sw*
 local_settings.py
+.DS_Store
