@@ -17,6 +17,9 @@
 //   TODO  11/12/13  the slide stuff is 1-indexed, which is confusing
 //
 //   TODO  11/13/13  use jquery negative indexing to get to the end!  e.g. foo.eq(-1)
+//
+//   TODO  though the number of 'page control' things should correspond to 
+//         the number of slides
 
 //
 // NOTE:  doing event.preventDefault can disable the default browser behavior
@@ -352,6 +355,8 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
 
                 function doCSSAnimationTransition(direction, doAnimateCallback) {//{{{
                     /*
+                        XXX TODO  relies on an "out of scope" slideList variable up there ^
+
                         Q. what happens here?
 
                         slide           what happens
@@ -366,13 +371,10 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
 
                         (^  extremely plagiarized from bustle.com, which 
                             has a super cool slider I am trying to copy <3 )
-                     */    
 
-                    // XXX TODO  relies on an "out of scope" slideList variable up there ^
+                        --------
 
-
-                    /*
-                        The four state variables used to perform the 
+                        'states' is the four state variables used to perform the 
                         CSS animations which provide the illusion of a
                         cool slider/carousel effect.  
                         
@@ -397,233 +399,76 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                     // clear state so as to re-apply them so CSS animations run
                     slideList.removeClass(states.join(' '));
 
-                    var USE_WHILE_LOOP_METHOD = false;
-
-                    if(USE_WHILE_LOOP_METHOD) {
-
-                        /*   WHILE LOOP ATTEMPT!//{{{
-                         
-                            Go through the next (OR previous) four slides,
-                            appending a class from 'states' for each iteration
-                            which when applied and all done will cause CSS animations
-                            to run which will give the illusion of a slide transition.
-
-                            'cursor' points to the current node to have a state applied
-
-                            If end (or start) is reached, loop to the first (or last) slide.
-                        */
-                        var i = 0, debug = '', hasLoopedAround = false;
-                        var currSlideNumZeroIndexed = currSlideNum - 1;
-                        var firstSlideCursorIndex = 0;
-                        var lastSlideCursorIndex = slideList.length - 1;
-
-                        timesSlidifyRun += 1;
-                        debugSlidify('slidify.js:392    doCSSAnimationTransition()' +
-                            '    going ' + direction + '!' +
-                            '    cursor: ' + cursor +
-                            '    currSlideNumZeroIndexed: ' + currSlideNumZeroIndexed +
-                            '    lastSlideCursorIndex: ' + lastSlideCursorIndex +
-                            '    hasLoopedAround: ' + hasLoopedAround
-                            
-    //                         '    timesSlidifyRun: ' + timesSlidifyRun +
-                        );
-
-                        while(i < states.length) {
-
-                            var cursorAtFirstSlide  = (cursor === firstSlideCursorIndex);
-
-                            // remember where the cursor was when we first started...  
-                            if(i === 0 && cursorAnchor === undefined) {
-                                debugSlidify('slidify.js:414   Setting cursorAnchor.   ' +
-                                             'BEFORE: ' + cursorAnchor +  '   ' +
-                                             'AFTER: ' + cursor
-                                );
-                                cursorAnchor = cursor; 
-                            }
+                    debugSlidify('doCSSAnimationTransition()'  +
+                        '     direction: ' + direction +
+                        '     currSlideNum: ' + currSlideNum, 404444
+                    );
 
 
-                            if(direction == LEFT) {
+                    /*
+                       iterate through the 4 relevant sibling nodes,
+                       applying the state classes in the right order!
+                    */
+                    var statesApplied = 0;
+                    var i, j; 
 
-                                if(cursorAtFirstSlide) { 
+                    if(direction == LEFT) {
 
-                                    if(hasLoopedAround === false) {
-                                        debug  = 'AAAAAA';
-                                        hasLoopedAround = true;
-                                        cursor = slideList.length - 1;  // point cursor to end
-                                        cursorAnchor = cursor; 
+                        //  iterate left (backwards) applying states as neccessary
+                        //
+                        //  Looping to the end is handled by jQuery()'s 
+                        //  .eq() method, since it indexes from the end if
+                        //  you give it a negative number like Python
 
-                                        debugSlidify('slidify.js:403    cursor is 0 so looping cursor to index of LAST slide of list!  (slideList.length - 1):  ' + (slideList.length -1));
-                                    }
-                                    else {
-                                        // NOT looping, so move cursor left one spot
-                                        debug  = 'BBBBBB';
-                                        cursor = i - 1;  
-                                    }
-                                }
-                                else {
-                                    // ...cursor *not* at 0  (the first slide index)
-                                    
-                                    if(hasLoopedAround) {
-                                        debug  = 'QQQQQQ';
-                                        cursor = cursor + i;
+                        for(i = 0; i < statesGoingLeft.length; i++) {
+                            j = currSlideNum - i - 1;
+                            var node = slideList.eq(j)
+                            node.addClass(statesGoingLeft[i]);
 
-                                        if(cursor > lastSlideCursorIndex) {
-                                            cursor = firstSlideCursorIndex;
-                                        }
-                                    }
-                                    else {
-                                        debug  = 'WWWWWWW';
+                            debugSlidify('j: ' + j + 
+                                "   index: " + node.index() +
+                                "   statesGoingLeft['" + i + "']: " + statesGoingLeft[i]);
+                        }
 
-                                        debugSlidify('slidify.js:444    cursor before/after: ' +
-                                                     [cursor, i-1]);
-
-                                        var next = i - 1;
-
-                                        if(next < 0) {
-                                            cursor = lastSlideCursorIndex - i;
-                                        }
-                                        else {
-                                            // move the cursor 'left' one spot
-                                            cursor = next;
-                                        }
-                                    }
-                                }
-                            }
-                            else {   // ...GOING RIGHT 
-                                if(slideList.length <= currSlideNum + i) {   // wrap!
-                                    debug  = 'EEEEEE';
-                                    cursor = (currSlideNum + i) - slideList.length;
-                                }
-                                else {
-                                    debug  = 'FFFFFF';
-                                    cursor = currSlideNum + i;
-                                }
-                            }
-
-                            debugSlidify("slidify.js:460   " + debug +
-                                "    setting '"   + states[i] + "' at cursor " + cursor +
-                                "    i: " + i +
-                                "    hasLoopedAround: " + hasLoopedAround +
-                                ""
-                            );
-
-                            slideList.eq(cursor).addClass(states[i]);
-                            i += 1;
-
-                        }  // end of while(...) loop through slide states
-
-
-                        if(cursorAnchor !== undefined) {
-
-                            debugSlidify('slidify.js:461   Restoring cursor to original state stored in cursorAnchor.  BEFORE: ' + cursor + '   AFTER: ' + cursorAnchor);
-
-                            cursor = cursorAnchor;
+                        if(currSlideNum - 1 <= 0) {
+                            console.log('$$$$$$');
+                            setSliderState(slideList.length);
                         }
                         else {
-                            debugSlidify('slidify.js:466  DID NOT RESTORE cursorAnchor!   it was: ' + cursorAnchor + '  and cursor was: ' + cursor);
+                            console.log('@@@@@@');
+                            setSliderState(currSlideNum - 1);
                         }
-
-                        /*
-                            Set current slide state, looping to start or end as needed
-                         */
-                        var newCurr;
-
-                        if(direction == LEFT) {
-                            if(currSlideNumZeroIndexed - 1 < 0) {
-                                setSliderState(slideList.length);
-                                debug = 'slidify.js:477   !!!  looping  START -> END';
-                            }
-                            else {
-                                newCurr = currSlideNumZeroIndexed;
-                                setSliderState(currSlideNumZeroIndexed);
-                                debug = 'slidify.js:482   &&&  newCurr: ' + newCurr;
-                            }
-                        }
-                        else {
-                            if(currSlideNum + 1 > slideList.length) {
-                                setSliderState(firstSlideCursorIndex);
-                                debug = 'slidify.js:488   @@@  looping  END -> START';
-                            }
-                            else {
-                                newCurr = currSlideNum + 1;
-                                setSliderState(newCurr);
-                                debug = 'slidify.js:493   $$$    newCurr: ' + newCurr;
-                            }
-                        }
-
-    //}}}
 
                     }
-                    else {
-                        // NEW TRY:  just iterate through the 4 relevant sibling nodes,
-                        // applying classes as needed
+                    else if(direction == RIGHT) {
 
-                        debugSlidify('doCSSAnimationTransition()'  +
-                            '     direction: ' + direction +
-                            '     currSlideNum: ' + currSlideNum, 538
-                        );
+                        //  1. from current position, go as far RIGHT as possible
+                        //     applying states
+                        //  2. from index 0, go right until we have 
+                        //     no more states to apply
 
-                        var statesApplied = 0;
-                        var i, j; 
-
-                        if(direction == LEFT) {
-
-                            //  iterate left (backwards) applying states as neccessary
-                            //
-                            //  Looping to the end is handled by jQuery()'s 
-                            //  .eq() method, since it indexes from the end if
-                            //  you give it a negative number like Python
-
-                            for(i = 0; i < statesGoingLeft.length; i++) {
-                                j = currSlideNum - i - 1;
-                                var node = slideList.eq(j)
-                                node.addClass(statesGoingLeft[i]);
-
-                                debugSlidify('j: ' + j + 
-                                    "   index: " + node.index() +
-                                    "   statesGoingLeft['" + i + "']: " + statesGoingLeft[i]);
-                            }
-
-                            if(currSlideNum - 1 <= 0) {
-                                console.log('$$$$$$');
-                                setSliderState(slideList.length);
-                            }
-                            else {
-                                console.log('@@@@@@');
-                                setSliderState(currSlideNum - 1);
-                            }
-
+                        for(i = currSlideNum - 1;  i < slideList.length; i++) { 
+                            debugSlidify('aaa ' + i + '   state: ' + states[statesApplied], 605); 
+                            slideList.eq(i).addClass(states[statesApplied]);
+                            statesApplied += 1;
                         }
-                        else if(direction == RIGHT) {
 
-                            //  1. from current position, go as far RIGHT as possible
-                            //     applying states
-                            //  2. from index 0, go right until we have 
-                            //     no more states to apply
+                        i = 0;
+                        while(statesApplied + i < states.length) {
+                            debugSlidify('ccc ' + i + '   state: ' + states[statesApplied + i], 612);
+                            slideList.eq(i).addClass(states[statesApplied + i]);
+                            i += 1;
+                        }
 
-                            for(i = currSlideNum - 1;  i < slideList.length; i++) { 
-                                debugSlidify('aaa ' + i + '   state: ' + states[statesApplied]); 
-                                slideList.eq(i).addClass(states[statesApplied]);
-                                statesApplied += 1;
-                            }
-
-                            i = 0;
-                            while(statesApplied + i < states.length) {
-                                debugSlidify('ccc ' + i + '   state: ' + states[statesApplied + i]);
-                                slideList.eq(i).addClass(states[statesApplied + i]);
-                                i += 1;
-                            }
-
-                            if(currSlideNum + 1 > slideList.length) {
-                                setSliderState(0);    // loop to the start
-                            }
-                            else {
-                                setSliderState(currSlideNum + 1);
-                            }
+                        if(currSlideNum + 1 > slideList.length) {
+                            setSliderState(0);    // loop to the start
                         }
                         else {
-                            debugSlidify(576, 'wtf shouldnt get here :O');
+                            setSliderState(currSlideNum + 1);
                         }
+                    }
+                    else {
+                        debugSlidify(576, 'wtf shouldnt get here :O');
                     }
 
                     opts.sliderChangedCallback(currSlide, nextSlide);
