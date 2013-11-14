@@ -1,15 +1,34 @@
 //
 //   slidify.js
 //
+//   Simple implementation of a carousel/slider.
 //
-// (thanks to Graham King a.k.a darkcoding who basically wrote the original code which I repackaged into a plugin!)
+//   Much thanks to Graham King a.k.a darkcoding who basically wrote the
+//   original code which I repackaged into a plugin!
 //
-
+//   The 'responsive slider' is literally, completely, ripped off from bustle.com!
+//   It is the bestest carousel/slider!  <3 <3 <3
+//
+//
+//   TODO  11/12/13  there's multiple times in which the 
+//                   entire length of the slider is calculated
+//                   and put into a variable:  just do this once
+//
+//   TODO  11/12/13  the slide stuff is 1-indexed, which is confusing
+//
+//   TODO  11/13/13  use jquery negative indexing to get to the end!  e.g. foo.eq(-1)
 
 //
 // NOTE:  doing event.preventDefault can disable the default browser behavior
 //        of being able to pan around the page and pinch-to-zoom
 //
+
+var DEBUG_SLIDIFY = true;
+var DEBUG_LOG_SEPARATOR = '==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=--==-';
+
+var timesSlidifyRun = 0;
+
+debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' + (arguments[1] || '') + '   ' + arguments[0]); } : function(x) {};
 
 (function($) {
     // see http://docs.jquery.com/Plugins/Authoring etc.
@@ -64,14 +83,14 @@
 
             return this.each(function(index, value) {
 
-//                 console.log('slidify.js:64  initiating slidified slider #' + index + ' with touch style, ' + opts.touch);
-
                 var slider = $(this);  // holds the container for the slider
                 var sliderSlides = slider.find(opts.slides);
 
-                //  3/24/13  trying to support a design in which 
-                //  "non-active" slides can be visible to the user
+                //  3/24/13  for supporting designs in which 
+                //  "non-active" slides can be 'partial'lly visible to the user
                 var isPartial = slider.hasClass('partial');
+
+                //  11/13/13 
                 var isResponsive = slider.hasClass('responsive');
 
                 if(isResponsive) {  // XXX  if a billion slides, this will die 
@@ -80,6 +99,12 @@
                     slideList.eq(1).addClass('on-deck');
                     slideList.eq(2).addClass('in-the-hole');
                     slideList.eq(3).addClass('last-up');
+
+                    debugSlidify('   \'at-bat\' at cursor 0', 98);
+                    debugSlidify('   \'on-deck\' at cursor 1', 99);
+                    debugSlidify('  \'in-the-hole\' at cursor 2', 100);
+                    debugSlidify('  \'last-up\' at cursor 3', 101);
+                    debugSlidify(DEBUG_LOG_SEPARATOR, 102);
                 }
                 else {
                     // the very first slide should be "active", so indicate that
@@ -109,12 +134,13 @@
                 //  2. we're on the first slide and the left arrow is pressed
                 var willLoopAround = false;
 
+                // state variables set in setSliderState()
                 var currSlideNum, nextSlideNum;
                 var slideOnLeftNum, slideOnRightNum;
                 var currSlide, nextSlide, slideOnLeft, slideOnRight;
 
                 enableSlidePageControlButtons();
-                setSlideNumbers();
+                setSliderState();
                 makeSwipable();
 
                 function doAnimate(direction, doAnimateCallback) {//{{{
@@ -144,7 +170,7 @@
                         case LEFT:
                             if(currSlideNum <= FIRST_SLIDE_NUMBER) {
 
-                                console.log('slidify.js:120  at start of slides!  currSlideNum: ' + currSlideNum + '   FIRST_SLIDE_NUMBER: ' + FIRST_SLIDE_NUMBER);
+                                debugSlidify('slidify.js:120  at start of slides!  currSlideNum: ' + currSlideNum + '   FIRST_SLIDE_NUMBER: ' + FIRST_SLIDE_NUMBER);
 
                                 if(opts.looped) {
                                     nextSlideNum = LAST_SLIDE_NUMBER;
@@ -165,7 +191,7 @@
 
                         case RIGHT:
                             if(currSlideNum  >= LAST_SLIDE_NUMBER) {
-                                console.log('slidify.js:121  at end of slides!   currSlideNum: ' + currSlideNum + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER);
+                                debugSlidify('slidify.js:121  at end of slides!   currSlideNum: ' + currSlideNum + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER);
 
                                 if(opts.looped) {
                                     nextSlideNum = FIRST_SLIDE_NUMBER;
@@ -184,7 +210,7 @@
                             break;
 
                         default:
-                            console.log('slidify.js:151  doAnimate() wtf, shouldnt get to default block!');
+                            debugSlidify('slidify.js:151  doAnimate() wtf, shouldnt get to default block!');
                             return;
                     }
 
@@ -196,7 +222,7 @@
                     var nextSlide  = slider.find(selectorNext);
 
 
-                    console.log('slidify.js:152  doAnimate() ' + direction + '   selectorCurrent: ' + selectorCurrent + '   selectorNext: ' + selectorNext + '    currSlideEnd.left: ' + currSlideEnd.left + '    nextSlideEnd.left: ' + nextSlideEnd.left + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER + '   currSlideNum: ' + currSlideNum + '   nextSlideNum: ' + nextSlideNum);
+                    debugSlidify('slidify.js:152  doAnimate() ' + direction + '   selectorCurrent: ' + selectorCurrent + '   selectorNext: ' + selectorNext + '    currSlideEnd.left: ' + currSlideEnd.left + '    nextSlideEnd.left: ' + nextSlideEnd.left + '   LAST_SLIDE_NUMBER: ' + LAST_SLIDE_NUMBER + '   currSlideNum: ' + currSlideNum + '   nextSlideNum: ' + nextSlideNum);
 
                     if(isPartial) {
 
@@ -216,7 +242,7 @@
                                 // situated "in front" of the first, so that
                                 // it appears to be circling around
 
-                                console.log('slidify.js:199  ROTATE last slide to the front!');
+                                debugSlidify('slidify.js:199  ROTATE last slide to the front!');
                                 lastSlide.css('position', 'absolute')
                                     .css('left', -SLIDE_WIDTH)
                                     .insertBefore(firstSlide);
@@ -226,7 +252,7 @@
                             newCssLeft = cssLeft - SLIDE_WIDTH;
 
                             if(nextSlide.next(opts.slide).size() === 0) {
-                                console.log('slidify.js:206  ROTATE first slide to the end!');
+                                debugSlidify('slidify.js:206  ROTATE first slide to the end!');
 
                                 firstSlide.css('position', 'absolute')
                                     .css('left', SLIDE_WIDTH)
@@ -235,7 +261,7 @@
                         }
 
 
-                        console.log('slidify.js:228  doAnimate()   class: ' + sliderSlides.attr('class') + '   style: ' + sliderSlides.attr('style') + '   newCssLeft: ' + newCssLeft + '   cssLeft: ' + cssLeft );
+                        debugSlidify('slidify.js:228  doAnimate()   class: ' + sliderSlides.attr('class') + '   style: ' + sliderSlides.attr('style') + '   newCssLeft: ' + newCssLeft + '   cssLeft: ' + cssLeft );
 
                         sliderSlides.animate({ left: newCssLeft }, {
                             duration: opts.duration,
@@ -273,7 +299,7 @@
                         }
                     }
                     else {
-                        console.log('slidify.js:264    regular!');
+                        debugSlidify('slidify.js:264    regular!');
 
                         // slide OUT the current slide and slide IN the new one
                         //
@@ -284,7 +310,7 @@
                             duration: opts.duration,
                             complete: function() {
 
-                                console.log('slidify.js:203  doAnimate()  currSlide.animate callback!  REMOVING ACTIVE CLASS  -> ' + $(this).attr('class'));
+                                debugSlidify('slidify.js:203  doAnimate()  currSlide.animate callback!  REMOVING ACTIVE CLASS  -> ' + $(this).attr('class'));
 
                                 // since removing the ACTIVE class will make it 
                                 // disappear, remove it *after* its slid out
@@ -302,7 +328,7 @@
                                 // goes off the screen, these (important)
                                 // callbacks might not run!
 
-                                console.log('slidify.js:220  doAnimate()  nextSlide.animate callback!  cleaning up slider state...');
+                                debugSlidify('slidify.js:220  doAnimate()  nextSlide.animate callback!  cleaning up slider state...');
 
                                 // ...because we disable it at the top of doAnimate
                                 // to prevent next/prev click spam
@@ -315,92 +341,299 @@
                         });
                     }
 
-                    setSlideNumbers(nextSlideNum);
+                    setSliderState(nextSlideNum);
 
-                    console.log('slidify.js:241  doAnimate()  finished!  currSlideNum: ' + currSlideNum);
+                    debugSlidify('slidify.js:241  doAnimate()  finished!  currSlideNum: ' + currSlideNum);
 
                 } // end of doAnimate()      //}}}
 
-                function doCSSAnimationTransition(direction, doAnimateCallback) {
+                var cursor = 0;
+                var cursorAnchor;
+
+                function doCSSAnimationTransition(direction, doAnimateCallback) {//{{{
+                    /*
+                        Q. what happens here?
+
+                        slide           what happens
+                        -----           ------------
+                        at-bat          gets animated out
+
+                        on-deck         gets animated in, and div is expanded
+                                        to the full width of the image: 790px;
+
+                        in-the-hole     gets animated in, and set 60% of the width
+                                        of the 'full width' of the image:  480px;
+
+                        (^  extremely plagiarized from bustle.com, which 
+                            has a super cool slider I am trying to copy <3 )
+                     */    
 
                     // XXX TODO  relies on an "out of scope" slideList variable up there ^
+
+
+                    /*
+                        The four state variables used to perform the 
+                        CSS animations which provide the illusion of a
+                        cool slider/carousel effect.  
+                        
+                        Basically, it involves the follow design/layout:
+
+                            [[ last-up ]]   [[ at-bat ]]   [[ on-deck ]]   [[ in-the-hole ]]
+
+                        ...
+                        TODO  explain moar ^
+
+
+                        TODO  there is probably a clever way to implement this without
+                              having two keep two lists of states for each direction!
+                              --->
+                     */
+                    var states = ['last-up', 'at-bat', 'on-deck', 'in-the-hole'];  
+                    var statesGoingLeft = ['on-deck', 'at-bat', 'last-up', 'in-the-hole'];
 
                     var selectorCurrent = getSlideSelector(currSlideNum);
                     var currSlide  = slider.find(selectorCurrent);
 
-                    console.log('slidify.js:325   doCSSAnimationTransition()   currSlide is... ' + currSlide.attr('class') + '   currSlideNum: ' + currSlideNum + '   slideList.length: ' + slideList.length + '   direction: ' + direction);
+                    // clear state so as to re-apply them so CSS animations run
+                    slideList.removeClass(states.join(' '));
 
-                    var states = ['at-bat', 'on-deck', 'in-the-hole', 'last-up'];
-                    slideList.removeClass('active ' + states.join(' '));
+                    var USE_WHILE_LOOP_METHOD = false;
 
-                    var i = 0, cursor;
+                    if(USE_WHILE_LOOP_METHOD) {
 
-                    while(i < states.length) {
+                        /*   WHILE LOOP ATTEMPT!//{{{
+                         
+                            Go through the next (OR previous) four slides,
+                            appending a class from 'states' for each iteration
+                            which when applied and all done will cause CSS animations
+                            to run which will give the illusion of a slide transition.
+
+                            'cursor' points to the current node to have a state applied
+
+                            If end (or start) is reached, loop to the first (or last) slide.
+                        */
+                        var i = 0, debug = '', hasLoopedAround = false;
+                        var currSlideNumZeroIndexed = currSlideNum - 1;
+                        var firstSlideCursorIndex = 0;
+                        var lastSlideCursorIndex = slideList.length - 1;
+
+                        timesSlidifyRun += 1;
+                        debugSlidify('slidify.js:392    doCSSAnimationTransition()' +
+                            '    going ' + direction + '!' +
+                            '    cursor: ' + cursor +
+                            '    currSlideNumZeroIndexed: ' + currSlideNumZeroIndexed +
+                            '    lastSlideCursorIndex: ' + lastSlideCursorIndex +
+                            '    hasLoopedAround: ' + hasLoopedAround
+                            
+    //                         '    timesSlidifyRun: ' + timesSlidifyRun +
+                        );
+
+                        while(i < states.length) {
+
+                            var cursorAtFirstSlide  = (cursor === firstSlideCursorIndex);
+
+                            // remember where the cursor was when we first started...  
+                            if(i === 0 && cursorAnchor === undefined) {
+                                debugSlidify('slidify.js:414   Setting cursorAnchor.   ' +
+                                             'BEFORE: ' + cursorAnchor +  '   ' +
+                                             'AFTER: ' + cursor
+                                );
+                                cursorAnchor = cursor; 
+                            }
+
+
+                            if(direction == LEFT) {
+
+                                if(cursorAtFirstSlide) { 
+
+                                    if(hasLoopedAround === false) {
+                                        debug  = 'AAAAAA';
+                                        hasLoopedAround = true;
+                                        cursor = slideList.length - 1;  // point cursor to end
+                                        cursorAnchor = cursor; 
+
+                                        debugSlidify('slidify.js:403    cursor is 0 so looping cursor to index of LAST slide of list!  (slideList.length - 1):  ' + (slideList.length -1));
+                                    }
+                                    else {
+                                        // NOT looping, so move cursor left one spot
+                                        debug  = 'BBBBBB';
+                                        cursor = i - 1;  
+                                    }
+                                }
+                                else {
+                                    // ...cursor *not* at 0  (the first slide index)
+                                    
+                                    if(hasLoopedAround) {
+                                        debug  = 'QQQQQQ';
+                                        cursor = cursor + i;
+
+                                        if(cursor > lastSlideCursorIndex) {
+                                            cursor = firstSlideCursorIndex;
+                                        }
+                                    }
+                                    else {
+                                        debug  = 'WWWWWWW';
+
+                                        debugSlidify('slidify.js:444    cursor before/after: ' +
+                                                     [cursor, i-1]);
+
+                                        var next = i - 1;
+
+                                        if(next < 0) {
+                                            cursor = lastSlideCursorIndex - i;
+                                        }
+                                        else {
+                                            // move the cursor 'left' one spot
+                                            cursor = next;
+                                        }
+                                    }
+                                }
+                            }
+                            else {   // ...GOING RIGHT 
+                                if(slideList.length <= currSlideNum + i) {   // wrap!
+                                    debug  = 'EEEEEE';
+                                    cursor = (currSlideNum + i) - slideList.length;
+                                }
+                                else {
+                                    debug  = 'FFFFFF';
+                                    cursor = currSlideNum + i;
+                                }
+                            }
+
+                            debugSlidify("slidify.js:460   " + debug +
+                                "    setting '"   + states[i] + "' at cursor " + cursor +
+                                "    i: " + i +
+                                "    hasLoopedAround: " + hasLoopedAround +
+                                ""
+                            );
+
+                            slideList.eq(cursor).addClass(states[i]);
+                            i += 1;
+
+                        }  // end of while(...) loop through slide states
+
+
+                        if(cursorAnchor !== undefined) {
+
+                            debugSlidify('slidify.js:461   Restoring cursor to original state stored in cursorAnchor.  BEFORE: ' + cursor + '   AFTER: ' + cursorAnchor);
+
+                            cursor = cursorAnchor;
+                        }
+                        else {
+                            debugSlidify('slidify.js:466  DID NOT RESTORE cursorAnchor!   it was: ' + cursorAnchor + '  and cursor was: ' + cursor);
+                        }
 
                         /*
-                            Go through the next or previous four slides, and
-                            append a class from  'states' for each iteration.
+                            Set current slide state, looping to start or end as needed
+                         */
+                        var newCurr;
 
-                            If the end (or start) is reached, loop to the 
-                            first (or last) slide
-                        */
                         if(direction == LEFT) {
-
-                            if(currSlideNum - i < 0) {
-                                cursor = slideList.length;
+                            if(currSlideNumZeroIndexed - 1 < 0) {
+                                setSliderState(slideList.length);
+                                debug = 'slidify.js:477   !!!  looping  START -> END';
                             }
                             else {
-                                cursor = currSlideNum - i;
+                                newCurr = currSlideNumZeroIndexed;
+                                setSliderState(currSlideNumZeroIndexed);
+                                debug = 'slidify.js:482   &&&  newCurr: ' + newCurr;
                             }
                         }
                         else {
-//                             console.log('slidify.js:356   slideList.length: ' + slideList.length + '   currSlideNum: '  + currSlideNum + '  i: ' + i +   '   currSlideNum + i: ' + (currSlideNum + i));
-
-                            if(slideList.length <= currSlideNum + i) {
-//                                 cursor = 0;
-                                cursor = (currSlideNum + i) - slideList.length;
+                            if(currSlideNum + 1 > slideList.length) {
+                                setSliderState(firstSlideCursorIndex);
+                                debug = 'slidify.js:488   @@@  looping  END -> START';
                             }
                             else {
-                                cursor = currSlideNum + i;
+                                newCurr = currSlideNum + 1;
+                                setSliderState(newCurr);
+                                debug = 'slidify.js:493   $$$    newCurr: ' + newCurr;
                             }
-
                         }
 
-                        console.log('slidify.js:368   setting \'' + states[i] + '\' at cursor ' + cursor);
+    //}}}
 
-                        slideList.eq(cursor).addClass(states[i]);
-                        i += 1;
-                    }
-
-
-                    // increment/decrement currSlideNum looping to the
-                    // start or end as needed
-                    if(direction == LEFT) {
-
-                        if(currSlideNum - 1 < 0) {
-                            console.log('aaa');
-                            setSlideNumbers(slideList.length);
-                        }
-                        else {
-                            console.log('bbb');
-                            setSlideNumbers(currSlideNum - 1);
-                        }
                     }
                     else {
+                        // NEW TRY:  just iterate through the 4 relevant sibling nodes,
+                        // applying classes as needed
 
-                        if(currSlideNum + 1 > slideList.length) {
-                            console.log('ccc');
-                            setSlideNumbers(0);
+                        debugSlidify('doCSSAnimationTransition()'  +
+                            '     direction: ' + direction +
+                            '     currSlideNum: ' + currSlideNum, 538
+                        );
+
+                        var statesApplied = 0;
+                        var i, j; 
+
+                        if(direction == LEFT) {
+
+                            //  iterate left (backwards) applying states as neccessary
+                            //
+                            //  Looping to the end is handled by jQuery()'s 
+                            //  .eq() method, since it indexes from the end if
+                            //  you give it a negative number like Python
+
+                            for(i = 0; i < statesGoingLeft.length; i++) {
+                                j = currSlideNum - i - 1;
+                                var node = slideList.eq(j)
+                                node.addClass(statesGoingLeft[i]);
+
+                                debugSlidify('j: ' + j + 
+                                    "   index: " + node.index() +
+                                    "   statesGoingLeft['" + i + "']: " + statesGoingLeft[i]);
+                            }
+
+                            if(currSlideNum - 1 <= 0) {
+                                console.log('$$$$$$');
+                                setSliderState(slideList.length);
+                            }
+                            else {
+                                console.log('@@@@@@');
+                                setSliderState(currSlideNum - 1);
+                            }
+
+                        }
+                        else if(direction == RIGHT) {
+
+                            //  1. from current position, go as far RIGHT as possible
+                            //     applying states
+                            //  2. from index 0, go right until we have 
+                            //     no more states to apply
+
+                            for(i = currSlideNum - 1;  i < slideList.length; i++) { 
+                                debugSlidify('aaa ' + i + '   state: ' + states[statesApplied]); 
+                                slideList.eq(i).addClass(states[statesApplied]);
+                                statesApplied += 1;
+                            }
+
+                            i = 0;
+                            while(statesApplied + i < states.length) {
+                                debugSlidify('ccc ' + i + '   state: ' + states[statesApplied + i]);
+                                slideList.eq(i).addClass(states[statesApplied + i]);
+                                i += 1;
+                            }
+
+                            if(currSlideNum + 1 > slideList.length) {
+                                setSliderState(0);    // loop to the start
+                            }
+                            else {
+                                setSliderState(currSlideNum + 1);
+                            }
                         }
                         else {
-                            console.log('ddd');
-                            setSlideNumbers(currSlideNum + 1);
+                            debugSlidify(576, 'wtf shouldnt get here :O');
                         }
                     }
 
-                }
+                    opts.sliderChangedCallback(currSlide, nextSlide);
+//                     debugSlidify(debug, 545);
+                    debugSetSliderState();
+                    debugSlidify(DEBUG_LOG_SEPARATOR, 547);
 
-                function setSlideNumbers(newCurrentSlideNumber) {//{{{
+                }//}}}
+
+                function setSliderState(curr, left, right) {//{{{
                     /*
                         Set state variables for the current slidified thingy. 
 
@@ -411,8 +644,14 @@
                         IMPORTANT: this comparison of `=== 0` is really important!
                                    0 represents the index of the very first slide!
                      */
-                    if(newCurrentSlideNumber || newCurrentSlideNumber === 0)
-                        currSlideNum = newCurrentSlideNumber;
+
+                    if(curr || curr === 0)
+                        currSlideNum = curr;
+
+                    if(arguments.length == 3) {         // for overrides etc
+                        slideOnLeft = left;
+                        slideOnRightNum = right;
+                    }
 
                     if(!currSlideNum || currSlideNum == FIRST_SLIDE_NUMBER) {
                         currSlideNum = 1;
@@ -428,9 +667,23 @@
                         slideOnLeftNum = currSlideNum - 1;
                     }
 
-//                     console.log('slidify.js:256  setSlideNumbers()   left: ' + slideOnLeftNum + '   curr: ' + currSlideNum + '   right: ' + slideOnRightNum);
-
                 }//}}}
+
+                /*
+                    Call this after calling setSliderState() to
+                    see what it set that state to!
+                */
+                function debugSetSliderState() {
+                    debugSlidify('    setSliderState()' +
+                        '   left: ' + slideOnLeftNum +
+                        '   curr: ' + currSlideNum + 
+                        '   right: ' + slideOnRightNum, 586
+                    );
+
+                    if(DEBUG_SLIDIFY) {
+                        $('#debug-slidify-place').html('curr: ' + currSlideNum);
+                    }
+                }
 
                 function updatePageControl() {//{{{
                     var pageControls = slider.find(opts.pagecontrol + ' .control');
@@ -449,7 +702,6 @@
                 function enableSlidePageControlButtons() {//{{{
 
                     slider.find(opts.left).unbind('click').click(function() {
-//                         console.log('slidify.js:208  Clicked left');
                         if(isResponsive) {
                             doCSSAnimationTransition(LEFT);
                         }
@@ -460,7 +712,6 @@
                     });
 
                     slider.find(opts.right).unbind('click').click(function() {
-//                         console.log('slidify.js:212  Clicked right');
                         if(isResponsive) {
                             doCSSAnimationTransition(RIGHT);
                         }
@@ -516,7 +767,7 @@
 
                     // [0] because sliderSlides is a jQuery object
                     if(!sliderSlides[0]) {
-                        console.log('slidify.js:257  doh! slidify needs a child ' + opts.slides + ' element to work!');
+                        debugSlidify('slidify.js:257  doh! slidify needs a child ' + opts.slides + ' element to work!');
                         return;
                     }
 
@@ -525,7 +776,7 @@
                         sliderSlides[0].addEventListener('touchstart', function(e) {
 
                             if(animatingSlideChange) {
-                                console.log('slidify.js:279  touchstart   animatingSlideChange already, so dont start another');
+                                debugSlidify('slidify.js:279  touchstart   animatingSlideChange already, so dont start another');
                                 return;
                             }
 
@@ -535,7 +786,7 @@
                               e.preventDefault();
                             }
 
-                            console.log('------------------------------------');
+                            debugSlidify('------------------------------------');
 
                             // setup initial state
                             startX = e.targetTouches[0].pageX;
@@ -550,7 +801,7 @@
                             startedPanningHorizontaly = undefined;
                             usedOneFinger = e.touches.length == 1;
 
-                            console.log('slidify.js:336  touchstart  at ' + touchToString({ x: startX, y:startY }) + '  currSlideNum: ' + currSlideNum + '  windowScrollStart: ' + windowScrollStart + '   usedOneFinger: ' + usedOneFinger + '   animatingSlideChange: ' + animatingSlideChange);
+                            debugSlidify('slidify.js:336  touchstart  at ' + touchToString({ x: startX, y:startY }) + '  currSlideNum: ' + currSlideNum + '  windowScrollStart: ' + windowScrollStart + '   usedOneFinger: ' + usedOneFinger + '   animatingSlideChange: ' + animatingSlideChange);
 
                             if(IS_TOUCH_SLIDES_WITH_FINGER) {
                                 animatingSlideChange = true;
@@ -568,7 +819,7 @@
                                 slideOnLeft.addClass(ACTIVE);
                                 slideOnRight.addClass(ACTIVE);
 
-                                // console.log('slidify.js:371  touchstart  slideOnRight left: ' + slideOnRight.css('left') + '  slideOnLeft left: ' + slideOnLeft.css('left') + '   SLIDE_WIDTH_PIXELS: ' + SLIDE_WIDTH_PIXELS + '   slideOnRight selector: ' + getSlideSelector(slideOnRightNum) );
+                                // debugSlidify('slidify.js:371  touchstart  slideOnRight left: ' + slideOnRight.css('left') + '  slideOnLeft left: ' + slideOnLeft.css('left') + '   SLIDE_WIDTH_PIXELS: ' + SLIDE_WIDTH_PIXELS + '   slideOnRight selector: ' + getSlideSelector(slideOnRightNum) );
                             }
                             else {
                                 animatingSlideChange = false;
@@ -589,7 +840,7 @@
                             }
 
                             if(completingSlideChange) {
-                                console.log('slidify.js:406  touchmove  completing slide change, do not start another!!!1');
+                                debugSlidify('slidify.js:406  touchmove  completing slide change, do not start another!!!1');
                                 return;
                             }
 
@@ -626,12 +877,12 @@
                                 }
                             }
 
-//                             console.log('slidify.js:409  touchmove   deltaX: ' + deltaX + '  deltaY: ' + deltaY + '  startedPanningHorizontaly: ' + startedPanningHorizontaly);
+//                             debugSlidify('slidify.js:409  touchmove   deltaX: ' + deltaX + '  deltaY: ' + deltaY + '  startedPanningHorizontaly: ' + startedPanningHorizontaly);
 
                             if(startedPanningHorizontaly === true &&
                                     Math.abs(deltaY) > 0) {
 
-//                                 console.log('slidify.js:397  touchmove   panned vertically,  but already moved horizontally, so preventing vertical panning altogether');
+//                                 debugSlidify('slidify.js:397  touchmove   panned vertically,  but already moved horizontally, so preventing vertical panning altogether');
                                 e.preventDefault();
                             }
 
@@ -675,29 +926,29 @@
 
                             var removedAllFingers = e.touches.length === 0;
 
-                            console.log('slidify.js:478  touchend   entered  e.touches.length: ' + e.touches.length + '   e.targetTouches.length: ' + e.targetTouches.length +  '  animatingSlideChange: ' + animatingSlideChange + '  removedAllFingers: ' + removedAllFingers);
+                            debugSlidify('slidify.js:478  touchend   entered  e.touches.length: ' + e.touches.length + '   e.targetTouches.length: ' + e.targetTouches.length +  '  animatingSlideChange: ' + animatingSlideChange + '  removedAllFingers: ' + removedAllFingers);
 
                             // there are situations in which we do not
                             // want to perform the animations which
                             // are done on touchend... we handle them here
 
                             if(IS_TOUCH_SIMPLE && animatingSlideChange) {
-                                console.log('slidify.js:490  touchend   animatingSlideChange slides, so dont do animations');
+                                debugSlidify('slidify.js:490  touchend   animatingSlideChange slides, so dont do animations');
                                 return;
                             }
 
                             if(!removedAllFingers) {
-                                console.log('slidify.js:495  touchend  didnt remove all fingers, so dont do more animations');
+                                debugSlidify('slidify.js:495  touchend  didnt remove all fingers, so dont do more animations');
                                 return;
                             }
 
                             if(!usedOneFinger) {
-                                console.log('slidify.js:500  touchend  used more than one finger, do not do anything!');
+                                debugSlidify('slidify.js:500  touchend  used more than one finger, do not do anything!');
                                 return;
                             }
 
                             if(completingSlideChange) {
-                                console.log('slidify.js:509  touchend  completing slide change, do not start another!!!1');
+                                debugSlidify('slidify.js:509  touchend  completing slide change, do not start another!!!1');
                                 return;
                             }
 
@@ -717,11 +968,11 @@
                             //   maybe shouldnt be here, as I copied it from touchmove
                             var movedMoreVertically = changeXabs < changeYabs;
 
-                            console.log('slidify.js:543  touchend  at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}) + '  totalScrollAmount? ' + totalScrollAmount + '  windowScrollEnd: ' + windowScrollEnd + '  startedPanningHorizontaly: ' + startedPanningHorizontaly + '  e.touches.length: ' +  e.touches.length );
+                            debugSlidify('slidify.js:543  touchend  at ' + touchToString({ x:endX, y:endY }) + '  change: ' + touchToString({ x:changeX, y:changeY}) + '  totalScrollAmount? ' + totalScrollAmount + '  windowScrollEnd: ' + windowScrollEnd + '  startedPanningHorizontaly: ' + startedPanningHorizontaly + '  e.touches.length: ' +  e.touches.length );
 
 
                             if(tapped) {
-                                console.log('slidify.js:547  touchend  just did a tap, so not doin anythin');
+                                debugSlidify('slidify.js:547  touchend  just did a tap, so not doin anythin');
 
                                 // XXX IMPORTANT!  We still need to clean up
                                 //     state still ...probably should turn this
@@ -762,14 +1013,14 @@
                                         nextSlide = slideOnLeft;
                                     }
 
-//                                     console.log('slidify.js:500  touchend  checking threshold    changeX: ' + changeX + '    SLIDE_WIDTH / 2.0: ' + SLIDE_WIDTH / 2.0 + '    shift: ' + shift + '    currSlide left: ' + currSlide.css('left') + '   windowScrollEnd: ' + windowScrollEnd);
+//                                     debugSlidify('slidify.js:500  touchend  checking threshold    changeX: ' + changeX + '    SLIDE_WIDTH / 2.0: ' + SLIDE_WIDTH / 2.0 + '    shift: ' + shift + '    currSlide left: ' + currSlide.css('left') + '   windowScrollEnd: ' + windowScrollEnd);
 
                                     if(changeXabs <= THRESHOLD) {
 
                                         // we haven't passed the threshold
                                         // ...so retract!
 
-//                                         console.log('slidify.js:505  touchend  ' + changeXabs + ' was below threshold of ' + THRESHOLD + ', so RETRACTING...');
+//                                         debugSlidify('slidify.js:505  touchend  ' + changeXabs + ' was below threshold of ' + THRESHOLD + ', so RETRACTING...');
 
                                         shift = '0px';
 
@@ -781,15 +1032,15 @@
                                         }
                                     }
                                     else {
-//                                         console.log('slidify.js:508  ' + changeXabs + ' WAS ABOVE the threshold of ' + THRESHOLD + ', so doing slide change!');
+//                                         debugSlidify('slidify.js:508  ' + changeXabs + ' WAS ABOVE the threshold of ' + THRESHOLD + ', so doing slide change!');
 
                                         shiftNext = '0px';
 
                                         if(swipedToTheLeft) {
-                                            setSlideNumbers(slideOnRightNum);
+                                            setSliderState(slideOnRightNum);
                                         }
                                         else {
-                                            setSlideNumbers(slideOnLeftNum);
+                                            setSliderState(slideOnLeftNum);
                                         }
                                     }
 
@@ -800,7 +1051,7 @@
                                     currSlide.animate({ 'left': shift }, {
                                         duration: opts.duration,
                                         complete: function() {
-                                            console.log('slidify.js:484  currSlide complete!');
+                                            debugSlidify('slidify.js:484  currSlide complete!');
 
                                             var retracted = shift == '0px';
 
@@ -822,7 +1073,7 @@
                                     nextSlide.animate({ 'left': shiftNext }, {
                                         duration: opts.duration,
                                         complete: function() {
-                                            console.log('slidify.js:524  nextSlide complete!');
+                                            debugSlidify('slidify.js:524  nextSlide complete!');
                                             animatingSlideChange = false;
                                             completingSlideChange = false;
 
@@ -841,11 +1092,11 @@
                                         var direction;        // figure out where to go
 
                                         if(swipedToTheLeft) {
-//                                             console.log('slidify.js:646  touchend  swiped left');
+//                                             debugSlidify('slidify.js:646  touchend  swiped left');
                                             direction = RIGHT;
                                         }
                                         else {
-//                                             console.log('slidify.js:650  touchend  swiped right');
+//                                             debugSlidify('slidify.js:650  touchend  swiped right');
                                             direction = LEFT;
                                         }
 

@@ -2,13 +2,14 @@
 <html>
     <head>
         <title> 
-            slidify.js responsive deign demo!  (AKA rip off of bustle.com)
+            slidify.js responsive slider/carousel demo!  (AKA rip off of bustle.com)
         </title>
         <script type="text/javascript" src="jquery-1.8.3.js"></script>
         <script type="text/javascript" src="ios6-timers.js"></script>
         <script type="text/javascript" src="slidify.js"></script>
         <link href="slidify.css" rel="stylesheet"/>
         <link href="demo.css" rel="stylesheet"/>
+
         <style type="text/css"> 
             .background-image {
                 background-position: center center;
@@ -29,42 +30,42 @@
                 background-color:cornflowerblue;
                 height:444px;
                 width:790px;
-                transform: translate3d(0px, 0px, 0px);
             }
-            .slide img {
-                height: 100%;
-                width: 100%;
-            } 
-            .slide.at-bat {
-                left:1.6% !important;
-                width: 63.6% !important;
-            } 
-            .slide.on-deck {
-                left:67.8% !important;
-            } 
-            .slide.in-the-hole {    /* in the hole"  */
-                left:100.85% !important;
-                opacity:0.4;
-            } 
-            .slide.last-up {     /*  "last up"  */
-                left:-31.4% !important;
-                opacity:0.4;
-            } 
-
             .slide label {
                 position:absolute;
                 left:5px;
                 top:5px;
-                color:orange;
+                color:#F60;
                 font-size:48px;
             } 
+            .slide label.os {
+                left:auto;
+                right:5px;
+            }
+
+            .slide5  {
+                /*  http://stackoverflow.com/questions/5768998/how-to-flip-background-image-using-css */
+                -moz-transform: scaleY(-1);
+                -o-transform: scaleY(-1);
+                -webkit-transform: scaleY(-1);
+                transform: scaleY(-1);
+                filter: FlipV;
+                -ms-filter: "FlipV";
+            }
+            .slide6 {
+                -moz-transform: scaleX(-1);
+                -o-transform: scaleX(-1);
+                -webkit-transform: scaleX(-1);
+                transform: scaleX(-1);
+                filter: FlipH;
+                -ms-filter: "FlipH";
+            }
 
             /* http://stackoverflow.com/questions/7072804/calling-a-css3-transition-from-jquery */
-            #animated-red-square {
+            .animated-red-square {
                 height:60px;
                 width:60px;
-                margin-top:30px;
-
+                margin-top:30px; 
                 background:red;
                 transition: all 0.3s linear;
                 -webkit-transition: all 0.3s linear;
@@ -72,7 +73,7 @@
                 -ms-transition: all 0.3s linear;
                 -o-transition: all 0.3s linear;
             }
-            #animated-red-square:hover {
+            .animated-red-square:hover {
                 background:purple;
                 transition: all 0.3s linear;
                 -webkit-transition: all 0.3s linear;
@@ -86,37 +87,28 @@
             $(document).ready(function() {
                 $('.slidified').slidify({ 
 
-                    duration: 700,
+                    duration: 900,
                     sliderChangedCallback: function(atBat, onDeck) {
 
-                        /*
-                            slide           what happens
-                            -----           ------------
-                            at-bat          gets animated out
-
-                            on-deck         gets animated in, and div is expanded
-                                            to the full width of the image: 790px;
-
-                            in-the-hole     gets animated in, and set 60% of the width
-                                            of the 'full width' of the image:  480px;
-
-                            (^  extremely plagiarized from bustle.com, which 
-                                has a super cool slider I am trying to copy <3 )
-                         */    
-
-                        var inTheHole = onDeck.next();
-
-                        /*
-                        onDeck.animate({ width: 790 });
-                        inTheHole.animate({ width: 480 });
-                        */
-
-                        console.log('demo-responsive.html:50    atBat: ' + atBat.attr('class') + '     onDeck: ' + onDeck.attr('class') + '    inTheHole: ' + inTheHole.attr('class'));
-
-
-                        
                     }
                 });
+            });
+
+            /*
+               left  - 37
+               up    - 38
+               right - 39
+               down  - 40
+            */
+            $(document).keydown(function(e) {
+                if(e.keyCode == 37) { 
+                    $('.slide_left').click();
+                    e.preventDefault();
+                }
+                if(e.keyCode == 39) {       
+                    $('.slide_right').click();
+                    e.preventDefault();
+                }
             });
 
         </script>
@@ -125,8 +117,8 @@
         <ul class="menu">
             <li> <a href="demo.html">demo.html</a> </li>
             <li> <a href="responsive-demo.html">responsive-demo.html</a> </li>
-            
-            <div id="animated-red-square"></div>
+            <li> <a href="javascript:location.reload(true)">reload</a> </li>
+            <div id="debug-slidify-place" class="animated-red-square"></div>
         </ul> 
         <br/> 
         <div class="slidified  partial  responsive">
@@ -144,24 +136,41 @@
 
             <div class="slides">
             
-                <div class="slide slide1 active"> 
-                    <label> #1 </label> 
+                <div class="slide slide1"> 
+                    <label> 0 </label> 
+                    <label class="os"> 0 </label> 
                     <div class="background-image" style="background-image: url(&quot;790x444-image1.jpg&quot;)"></div>
                 </div>
 
                 <div class="slide slide2">
-                    <label> #2 </label> 
+                    <label> 1 </label> 
+                    <label class="os"> 1 </label> 
                     <div class="background-image" style="background-image: url(&quot;790x444-image2.jpg&quot;)"></div>
                 </div>
 
                 <div class="slide slide3">
-                    <label> #3 </label> 
+                    <label> 2 </label> 
+                    <label class="os"> 2 </label> 
                     <div class="background-image" style="background-image: url(&quot;790x444-image3.jpg&quot;)"></div>
                 </div>
 
                 <div class="slide slide4">
-                    <label> #4 </label> 
+                    <label> 3 </label> 
+                    <label class="os"> 3 </label> 
                     <div class="background-image" style="background-image: url(&quot;790x444-image4.jpg&quot;)"></div>
+                </div>
+
+
+                <div class="slide slide5">
+                    <label> 4 </label> 
+                    <label class="os"> 4 </label> 
+                    <div class="background-image" style="background-image: url(&quot;790x444-image1.jpg&quot;)"></div>
+                </div>
+
+                <div class="slide slide6">
+                    <label> 5 </label> 
+                    <label class="os"> 5 </label> 
+                    <div class="background-image" style="background-image: url(&quot;790x444-image3.jpg&quot;)"></div>
                 </div>
             </div>
 

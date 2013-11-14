@@ -32,8 +32,6 @@
 .slidified.partial .slide.active {
     position:static;   /* e.g. the default position: value */
 }
-
-
 .slidified.partial.responsive .slides {
     width:auto;
     max-width:1200px;
@@ -42,7 +40,35 @@
     width:30.6%;
     position:absolute;
 
-   transform: translate3d(0px, 0px, 0px);
-   transition-duration: 0.8s;
-   transition-timing-function: ease;
+    transform: translate3d(0px, 0px, 0px);
+    transition-timing-function: ease;
+
+    /* transition-duration: 0.8s;               11/13/13  0.8 a lil slow  */
+    transition-duration: 0.65s;
+
+    /*  FIXME TODO  -  if there are more than 4 slides, we gotta position it off the screen!
+      
+          Q.  is this 'left: -100%' the way to do it??
+     */
+    left: -100%;        
 }
+
+.slidified.responsive .slide img {
+    height: 100%;
+    width: 100%;
+} 
+.slidified.responsive .slide.at-bat {           /* these percentages more or less plagarized from bustle.com  <3  */
+    left:1.6% !important;
+    width:63.6% !important;
+} 
+.slidified.responsive .slide.on-deck {
+    left:67.8% !important;
+} 
+.slidified.responsive .slide.in-the-hole {
+    left:100.85% !important;
+    opacity:0.4;
+} 
+.slidified.responsive .slide.last-up {
+    left:-31.4% !important;
+    opacity:0.4;
+} 
