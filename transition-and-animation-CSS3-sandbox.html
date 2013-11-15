@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html> 
+    <head>
+        <title>chained CSS transitions demo</title>
+
+        <style type="text/css">
+    
+            body {  margin: 30px; 100px; }
+
+            h2 { 
+                 position:absolute;
+                 top: 50px;
+                 left: 50px; 
+
+                 transition-property: top, left;
+                 transition-duration:  2.5s, 6s;
+
+                 transition-delay: 3200ms, 0;
+            }
+            h2.dood {
+                color:purple;
+
+                top: 400px;
+                left: 400px;
+            }
+            #cycle {
+                position:absolute;
+                top:100px;
+                left:10%;
+                right:0px;
+            }
+            #cycle.animate {
+
+                /* -webkit-animation-name: cycle;  */
+
+                -webkit-animation-name: moveOutToTheLeft, moveInFromTheRight;
+                -webkit-animation-delay: 0s, 0.5s;
+                -webkit-animation-duration: 2s, 1s;
+
+                -webkit-animation-timing-function: ease;
+                -webkit-animation-iteration-count: 1;
+                -webkit-animation-direction: normal;
+                -webkit-animation-play-state: running;
+                -webkit-animation-fill-mode: forwards;
+            }
+
+            @-webkit-keyframes moveOutToTheLeft {
+                to {
+                    left: -30%;
+                }
+            }
+            @-webkit-keyframes moveInFromTheRight {
+                from { 
+                    left: 110%;
+                }
+                to {
+                    left: 80%;
+                }
+            }
+
+            @-webkit-keyframes cycle {
+                0% {
+                    opacity: 0;
+                    left: 200px;
+                }
+                50% {
+                    opacity: 1;
+                }
+                75% {
+                    opacity: 1;
+                    left: 100px;
+                }
+                100% {
+                    left: 500px;
+                }
+            }
+            @-webkit-keyframes gogogo {
+                20% {
+                    left: -20%;
+                }
+                100% {
+                    left: 76%;
+                }
+            }
+            @-webkit-keyframes animationCarouselWrapBegin {
+                from {
+                    left:-31.4%
+                }
+                to {
+                    left:-56%
+                }
+            }
+            @-webkit-keyframes animationCarouselWrapEnd {
+                from {
+                    left:110%
+                }
+                to {
+                    left:100.85%
+                }
+            }
+
+            ul {
+                list-style-type:none;
+            }
+            ul li {
+                float:left;
+                margin-right: 40px;
+            }
+
+        </style>
+
+        <script type="text/javascript">
+
+            function doEet() {
+                document.getElementById('eet').setAttribute('class', 'dood');
+            }
+
+            function resetResetReset() {
+                document.getElementById('eet').removeAttribute('class');
+                document.getElementById('cycle').removeAttribute('animate');
+            }
+
+            function doCycle() {
+                document.getElementById('cycle').setAttribute('class', 'animate');
+            }
+
+
+
+        </script>
+    </head>
+    <body>
+        <ul> 
+            <li> 
+                <a href="javascript:doEet()">curl the "hello" down</a> 
+            </li>
+            <li> 
+                <a href="javascript:doCycle()">do cycle</a> 
+            </li>
+            <li> 
+                <a href="javascript:resetResetReset()">reset</a>
+            </li>
+        </ul>
+
+        <br/>
+        <br/>
+        <br/>
+
+        <h2 id="eet"> hello </h2>
+        <h3 id="cycle">cycle!</h3>
+    </body>
+</html>
