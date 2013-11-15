@@ -1,3 +1,17 @@
+/* 
+ 
+  NOTES: 
+    https://developer.mozilla.org/en-US/docs/Web/CSS/transition-duration
+    https://developer.mozilla.org/en-US/docs/Web/CSS/transition-delay
+    http://www.w3.org/TR/css3-transforms/
+    http://www.w3.org/TR/css3-animations/
+
+    http://dev.opera.com/articles/view/understanding-the-css-transforms-matrix/
+
+  TODO:
+        - vendor specific CSS3 transition things
+ */
+
 .slidified {
     position:relative;
     /*  overflow:hidden;   */      /*  <--- dosen't support design which involves stuff being to the left and right of the slides!  */
@@ -40,24 +54,28 @@
     width:30.6%;
     position:absolute;
 
-    transform: translate3d(0px, 0px, 0px);
-    transition-timing-function: ease;
+    /*  
+        Position slides off the screen by default.
 
-    /* transition-duration: 0.8s;               11/13/13  0.8 a lil slow  */
-    transition-duration: 0.65s;
-
-    /*  FIXME TODO  -  if there are more than 4 slides, we gotta position it off the screen!
-      
-          Q.  is this 'left: -100%' the way to do it??
+        NOTE - sync with other instances of -98.765 because this
+               uses both CSS3 transitions AND animations, and they
+               need to be synced up!
      */
-    left: -100%;        
+    left: -98.765%;
+
+    transition-duration: 0.65s;         /* <-- NOTE - sync with other instances of 0.65s!  */
+    transition-timing-function: ease;
+    transform: translate3d(0px, 0px, 0px);
 }
+
+
+/*   these percentages more or less plagarized from bustle.com  <3  -->   */
 
 .slidified.responsive .slide img {
     height: 100%;
     width: 100%;
 } 
-.slidified.responsive .slide.at-bat {           /* these percentages more or less plagarized from bustle.com  <3  */
+.slidified.responsive .slide.at-bat {           
     left:1.6% !important;
     width:63.6% !important;
 } 
@@ -72,3 +90,54 @@
     left:-31.4% !important;
     opacity:0.4;
 } 
+
+
+@-webkit-keyframes moveSlideOutToTheLeft {
+    from {
+        left:-31.4%;
+    }
+	to {
+		left:-98.765%;
+	}
+}
+@-webkit-keyframes moveSlideInFromTheRight {
+	from {
+		left:130%;
+	}
+	to {
+		left:100.85%;
+	}
+}
+
+/* TODO
+    For wrapping a slide from the right to the left when you push the left arrow.
+     
+        e.g.  in-the-hole  -> last-up
+
+    Because this inolves moving the slide out of view, and then moving 
+    it back into view on the opposite site, we use CSS3 animations
+    instead of transitions!
+ */
+/*
+.slidified.responsive .going-in-reverse .slide.last-up {
+    transition: none;
+}
+*/
+
+.slidified.responsive .going-ahead .slide.in-the-hole {
+	-webkit-animation-name:  moveSlideOutToTheLeft, moveSlideInFromTheRight;
+	-webkit-animation-timing-function:ease;
+	-webkit-animation-duration: 0.65s;
+	-webkit-animation-delay: 0s;
+
+    transition: none;
+}
+
+
+/*  
+      at-bat  ->  last-up 
+ */
+.slidified.responsive .going-in-reverse .slide.last-up {
+    transition: none;
+}
+

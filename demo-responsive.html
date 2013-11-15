@@ -11,6 +11,39 @@
         <link href="demo.css" rel="stylesheet"/>
 
         <style type="text/css"> 
+
+            .slide.animate-bounce {
+                transition: none !important;
+                -webkit-animation-name: fadeout;
+                -webkit-animation-duration: 0.75s;
+                -webkit-animation-delay: 0s;
+
+                -webkit-animation-play-state: running;
+                -webkit-animation-fill-mode: forwards;
+                -webkit-animation-timing-function: ease;
+                -webkit-animation-iteration-count: 3;
+            }
+            @-webkit-keyframes boingboing {
+
+                to {
+                    top:25%;
+                }
+            }
+
+            @-webkit-keyframes fadeout {
+                0% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.2;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+
+
+
             .background-image {
                 background-position: center center;
                 height: 100%;
@@ -30,6 +63,8 @@
                 background-color:cornflowerblue;
                 height:444px;
                 width:790px;
+
+                top:0%;
             }
             .slide label {
                 position:absolute;
@@ -81,6 +116,7 @@
                 -ms-transition: all 0.3s linear;
                 -o-transition: all 0.3s linear;
             }
+
         </style>
 
         <script type="text/javascript">
@@ -109,6 +145,13 @@
                     $('.slide_right').click();
                     e.preventDefault();
                 }
+            });
+
+            
+            $(document).ready(function() {
+                $('.slide').click(function(e) {
+                    $(e.currentTarget).addClass('animate-bounce');
+                });
             });
 
         </script>
@@ -174,6 +217,8 @@
                     <label class="os"> 5 </label> 
                     <div class="background-image" style="background-image: url(&quot;790x444-image3.jpg&quot;)"></div>
                 </div>
+
+
             </div>
 
         </div>

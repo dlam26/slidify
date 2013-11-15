@@ -62,6 +62,9 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
             // class denoting the slide which is currently visible
             var ACTIVE = 'active';
 
+            var GOING_AHEAD = 'going-ahead';
+            var GOING_IN_REVERSE = 'going-in-reverse';
+
             // touch/finger swipe options
             var TOUCH_SIMPLE = 'simple';
             var TOUCH_NONE = 'none';
@@ -414,6 +417,9 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
 
                     if(direction == LEFT) {
 
+                        sliderSlides.addClass(GOING_IN_REVERSE);
+                        sliderSlides.removeClass(GOING_AHEAD);
+
                         //  iterate left (backwards) applying states as neccessary
                         //
                         //  Looping to the end is handled by jQuery()'s 
@@ -441,6 +447,9 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
 
                     }
                     else if(direction == RIGHT) {
+
+                        sliderSlides.addClass(GOING_AHEAD);
+                        sliderSlides.removeClass(GOING_IN_REVERSE);
 
                         //  1. from current position, go as far RIGHT as possible
                         //     applying states
