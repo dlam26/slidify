@@ -20,6 +20,9 @@
 //
 //   TODO  though the number of 'page control' things should correspond to 
 //         the number of slides
+//
+//   TODO  11/15/13  defensive program when theres under 4 slides for the 
+//         responsive slider  (it needs a minimum of 4!)
 
 //
 // NOTE:  doing event.preventDefault can disable the default browser behavior
@@ -394,8 +397,6 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                               --->
                      */
                     var states = ['last-up', 'at-bat', 'on-deck', 'in-the-hole'];  
-                    var statesGoingLeft = ['on-deck', 'at-bat', 'last-up', 'in-the-hole'];
-
                     var selectorCurrent = getSlideSelector(currSlideNum);
                     var currSlide  = slider.find(selectorCurrent);
 
@@ -413,35 +414,56 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                        applying the state classes in the right order!
                     */
                     var statesApplied = 0;
+                    var theEnd = slideList.length - 1;
                     var i, j; 
+
+                    var debugdebug = '';
 
                     if(direction == LEFT) {
 
                         sliderSlides.addClass(GOING_IN_REVERSE);
                         sliderSlides.removeClass(GOING_AHEAD);
 
-                        //  iterate left (backwards) applying states as neccessary
-                        //
-                        //  Looping to the end is handled by jQuery()'s 
-                        //  .eq() method, since it indexes from the end if
-                        //  you give it a negative number like Python
+                        //  1. apply the 'at-bat' state to the slide 
+                        //     TO THE LEFT of the current
+                        //  2. apply the 'on-deck' state the current slide
+                        //  3. apply the 'in-the-hole' and 'last-up' states
+                        //     TO THE NEXT TWO NODES on the right
 
-                        for(i = 0; i < statesGoingLeft.length; i++) {
-                            j = currSlideNum - i - 1;
-                            var node = slideList.eq(j)
-                            node.addClass(statesGoingLeft[i]);
+                        var onDeckAndInTheHole = ['in-the-hole', 'last-up'];
 
-                            debugSlidify('j: ' + j + 
-                                "   index: " + node.index() +
-                                "   statesGoingLeft['" + i + "']: " + statesGoingLeft[i]);
-                        }
-
-                        if(currSlideNum - 1 <= 0) {
-                            console.log('$$$$$$');
-                            setSliderState(slideList.length);
+                        // Step 1
+                        if(currSlide.index() == 0) {
+                            slideList.eq(-1).addClass('at-bat');
                         }
                         else {
-                            console.log('@@@@@@');
+                            currSlide.prev().addClass('at-bat');
+                        }
+
+                        // Step 2
+                        currSlide.addClass('on-deck');
+
+                        // Step 3
+                        for(i = 0; i < onDeckAndInTheHole.length; i++) {
+                            j = currSlideNum + i;
+                            if(j > theEnd) 
+                                k = Math.abs(j - theEnd);
+                            else 
+                                k = j;
+
+//                             debugSlidify('j: ' + j + '  k: ' + k + '  state: ' + onDeckAndInTheHole[i], 454);
+
+                            slideList.eq(k).addClass(onDeckAndInTheHole[i]);
+                        }
+
+
+
+                        if(currSlideNum - 1 <= 0) {
+//                             console.log('$$$$$$');
+                            setSliderState(theEnd);
+                        }
+                        else {
+//                             console.log('@@@@@@');
                             setSliderState(currSlideNum - 1);
                         }
 
@@ -453,18 +475,20 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
 
                         //  1. from current position, go as far RIGHT as possible
                         //     applying states
-                        //  2. from index 0, go right until we have 
+                        //  2. from index 0, go right until there's
                         //     no more states to apply
 
+                        // Step 1
                         for(i = currSlideNum - 1;  i < slideList.length; i++) { 
-                            debugSlidify('aaa ' + i + '   state: ' + states[statesApplied] + '   statesApplied: ' + statesApplied, 605); 
+//                             debugSlidify('aaa ' + i + '   state: ' + states[statesApplied] + '   statesApplied: ' + statesApplied, 605); 
                             slideList.eq(i).addClass(states[statesApplied]);
                             statesApplied += 1;
                         }
 
+                        // Step 2
                         i = 0;
                         while(statesApplied + i < states.length) {
-                            debugSlidify('ccc ' + i + '   state: ' + states[statesApplied + i], 612);
+//                             debugSlidify('ccc ' + i + '   state: ' + states[statesApplied + i], 612);
                             slideList.eq(i).addClass(states[statesApplied + i]);
                             i += 1;
                         }

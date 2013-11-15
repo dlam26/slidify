@@ -12,38 +12,6 @@
 
         <style type="text/css"> 
 
-            .slide.animate-bounce {
-                transition: none !important;
-                -webkit-animation-name: fadeout;
-                -webkit-animation-duration: 0.75s;
-                -webkit-animation-delay: 0s;
-
-                -webkit-animation-play-state: running;
-                -webkit-animation-fill-mode: forwards;
-                -webkit-animation-timing-function: ease;
-                -webkit-animation-iteration-count: 3;
-            }
-            @-webkit-keyframes boingboing {
-
-                to {
-                    top:25%;
-                }
-            }
-
-            @-webkit-keyframes fadeout {
-                0% {
-                    opacity: 1;
-                }
-                50% {
-                    opacity: 0.2;
-                }
-                100% {
-                    opacity: 1;
-                }
-            }
-
-
-
             .background-image {
                 background-position: center center;
                 height: 100%;
@@ -79,7 +47,6 @@
             }
 
             .slide5  {
-                /*  http://stackoverflow.com/questions/5768998/how-to-flip-background-image-using-css */
                 -moz-transform: scaleY(-1);
                 -o-transform: scaleY(-1);
                 -webkit-transform: scaleY(-1);
@@ -118,6 +85,40 @@
             }
 
         </style>
+
+
+        <!-- sandbox CSS stuff -->
+        <style type="text/css">
+            .slide.animate-bounce {
+                transition: none !important;
+                -webkit-animation-name: fadeout;
+                -webkit-animation-duration: 0.75s;
+                -webkit-animation-delay: 0s;
+
+                -webkit-animation-play-state: running;
+                -webkit-animation-fill-mode: forwards;
+                -webkit-animation-timing-function: ease;
+                -webkit-animation-iteration-count: 3;
+            }
+            @-webkit-keyframes boingboing {
+
+                to {
+                    top:25%;
+                }
+            }
+            @-webkit-keyframes fadeout {
+                0% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.2;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+        </style>
+
 
         <script type="text/javascript">
             $(document).ready(function() {
