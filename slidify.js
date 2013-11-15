@@ -101,7 +101,7 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                     slideList.eq(0).addClass('at-bat');
                     slideList.eq(1).addClass('on-deck');
                     slideList.eq(2).addClass('in-the-hole');
-                    slideList.eq(3).addClass('last-up');
+                    slideList.eq(-1).addClass('last-up');
 
                     debugSlidify('   \'at-bat\' at cursor 0', 98);
                     debugSlidify('   \'on-deck\' at cursor 1', 99);
@@ -401,7 +401,7 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
 
                     debugSlidify('doCSSAnimationTransition()'  +
                         '     direction: ' + direction +
-                        '     currSlideNum: ' + currSlideNum, 404444
+                        '     currSlideNum: ' + currSlideNum, 404
                     );
 
 
@@ -448,7 +448,7 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                         //     no more states to apply
 
                         for(i = currSlideNum - 1;  i < slideList.length; i++) { 
-                            debugSlidify('aaa ' + i + '   state: ' + states[statesApplied], 605); 
+                            debugSlidify('aaa ' + i + '   state: ' + states[statesApplied] + '   statesApplied: ' + statesApplied, 605); 
                             slideList.eq(i).addClass(states[statesApplied]);
                             statesApplied += 1;
                         }
