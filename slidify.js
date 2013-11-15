@@ -424,49 +424,46 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                         sliderSlides.addClass(GOING_IN_REVERSE);
                         sliderSlides.removeClass(GOING_AHEAD);
 
-                        //  1. apply the 'at-bat' state to the slide 
-                        //     TO THE LEFT of the current
-                        //  2. apply the 'on-deck' state the current slide
-                        //  3. apply the 'in-the-hole' and 'last-up' states
-                        //     TO THE NEXT TWO NODES on the right
+                        //  1. apply the 'on-deck' state the CURRENT slide
+                        //  2. apply the 'in-the-hole' state to the slide on the RIGHT
+                        //
+                        //  3. iterate to the LEFT twice:
+                        //      - apply the 'at-bat' state in the FIRST iteration
+                        //      - apply the 'last-up' state in the SECOND iteration
 
-                        var onDeckAndInTheHole = ['in-the-hole', 'last-up'];
 
                         // Step 1
-                        if(currSlide.index() == 0) {
-                            slideList.eq(-1).addClass('at-bat');
-                        }
-                        else {
-                            currSlide.prev().addClass('at-bat');
-                        }
-
-                        // Step 2
                         currSlide.addClass('on-deck');
 
-                        // Step 3
-                        for(i = 0; i < onDeckAndInTheHole.length; i++) {
-                            j = currSlideNum + i;
-                            if(j > theEnd) 
-                                k = Math.abs(j - theEnd);
-                            else 
-                                k = j;
-
-//                             debugSlidify('j: ' + j + '  k: ' + k + '  state: ' + onDeckAndInTheHole[i], 454);
-
-                            slideList.eq(k).addClass(onDeckAndInTheHole[i]);
-                        }
-
-
-
-                        if(currSlideNum - 1 <= 0) {
-//                             console.log('$$$$$$');
-                            setSliderState(theEnd);
+                        // Step 2
+                        if(currSlide.index() == theEnd) {
+                            slideList.eq(0).addClass('in-the-hole');
                         }
                         else {
-//                             console.log('@@@@@@');
-                            setSliderState(currSlideNum - 1);
+                            currSlide.next().addClass('in-the-hole');
                         }
 
+                        // Step 3 
+                        var atBatAndLastUp = ['at-bat', 'last-up'];
+
+                        cursor = currSlide;
+
+                        for(i = 0; i < atBatAndLastUp.length; i++) {
+
+                            cursor = cursor.prev();
+
+                            if(cursor.size() == 0) {
+                                cursor = slideList.eq(theEnd);
+                                currSlide = cursor;
+                            }
+
+                            cursor.addClass(atBatAndLastUp[i]);
+
+                            if(i == 0) {
+                                setSliderState(cursor.index() + 1);
+                            }
+
+                        }
                     }
                     else if(direction == RIGHT) {
 
@@ -504,11 +501,12 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                         debugSlidify(576, 'wtf shouldnt get here :O');
                     }
 
-                    opts.sliderChangedCallback(currSlide, nextSlide);
-//                     debugSlidify(debug, 545);
-                    debugSetSliderState();
-                    debugSlidify(DEBUG_LOG_SEPARATOR, 547);
 
+                    opts.sliderChangedCallback(currSlide, nextSlide);
+
+
+//                     debugSlidify(debug, 545);
+                    debugSlidify(DEBUG_LOG_SEPARATOR, 547);
                 }//}}}
 
                 function setSliderState(curr, left, right) {//{{{
