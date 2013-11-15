@@ -19,6 +19,7 @@
 .slidified .slide {
     display:none;
     left:0px;
+    top:0px;
     /*  
         TODO  specify a fixed slide height & width 
               for the slides in an external stylesheet! 
