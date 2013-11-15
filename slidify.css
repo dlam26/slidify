@@ -64,7 +64,7 @@
      */
     left: -98.765%;
 
-    transition-duration: 0.65s;         /* <-- NOTE - sync with other instances of 0.65s!  */
+    transition-duration: 0.77s;         /* <-- NOTE - sync with other instances of 0.77s!  */
     transition-timing-function: ease;
     transform: translate3d(0px, 0px, 0px);
 }
@@ -91,7 +91,6 @@
     left:-31.4% !important;
     opacity:0.4;
 } 
-
 
 @-webkit-keyframes moveSlideOutToTheLeft {
     from {
@@ -126,19 +125,52 @@
 */
 
 .slidified.responsive .going-ahead .slide.in-the-hole {
+    transition: none;
+
 	-webkit-animation-name:  moveSlideOutToTheLeft, moveSlideInFromTheRight;
 	-webkit-animation-timing-function:ease;
-	-webkit-animation-duration: 0.65s;
-	-webkit-animation-delay: 0s;
+	-webkit-animation-duration: 0.77s;
 
-    transition: none;
+    /* 
+         for some reason the moveSlideOutToTheLeft animation is flickering out,
+         this 0.1s delay on the second animation may resolve it (?)
+     */
+	-webkit-animation-delay: 0s, 0.1s;   
+}
+
+
+@-webkit-keyframes moveSlideOutToTheRight { 
+    from {
+        left: 100.85%;
+    }
+    to {
+        left: 130.00%;          /*  <-- arbitrary "off screen" value  */
+    }
+}
+@-webkit-keyframes moveSlideInFromTheLeft { 
+
+    from {
+        left: -60.0%;
+    }
+    to {
+        left: -31.4%;
+    }
 }
 
 
 /*  
-      at-bat  ->  last-up 
+    Wrap slides when you push the LEFT button.
+
+    Here, the animation is:
+        1. the right most slide moves off the screen to the right
+        2. and comes back sliding onto the screen from the left
  */
 .slidified.responsive .going-in-reverse .slide.last-up {
     transition: none;
+
+    -webkit-animation-name: moveSlideOutToTheRight, moveSlideInFromTheLeft;
+    -webkit-animation-timing-function:ease;
+    -webkit-animation-duration: 0.77s;
+    -webkit-animation-delay: 0s;
 }
 
