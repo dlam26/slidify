@@ -109,20 +109,6 @@
 	}
 }
 
-/* TODO
-    For wrapping a slide from the right to the left when you push the left arrow.
-     
-        e.g.  in-the-hole  -> last-up
-
-    Because this inolves moving the slide out of view, and then moving 
-    it back into view on the opposite site, we use CSS3 animations
-    instead of transitions!
- */
-/*
-.slidified.responsive .going-in-reverse .slide.last-up {
-    transition: none;
-}
-*/
 
 .slidified.responsive .going-ahead .slide.in-the-hole {
     transition: none;
@@ -133,9 +119,11 @@
 
     /* 
          for some reason the moveSlideOutToTheLeft animation is flickering out,
+         when you have exactly FOUR slides
+
          this 0.1s delay on the second animation may resolve it (?)
      */
-	-webkit-animation-delay: 0s, 0.1s;   
+	/*  -webkit-animation-delay: 0s, 0.1s;    */
 }
 
 
@@ -171,6 +159,5 @@
     -webkit-animation-name: moveSlideOutToTheRight, moveSlideInFromTheLeft;
     -webkit-animation-timing-function:ease;
     -webkit-animation-duration: 0.77s;
-    -webkit-animation-delay: 0s;
 }
 
