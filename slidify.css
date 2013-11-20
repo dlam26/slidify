@@ -10,6 +10,14 @@
 
   TODO:
         - vendor specific CSS3 transition things
+
+        - 11/20/13  slide transition look & feel looks different when you have 
+                    four, five, or more than five slides
+
+                    For example, when you have four slides, it appears to look 
+                    different because the slide on the end must wrap around and 
+                    appear to be in two places at once.  Usually, when there's 
+                    more than 4 slides, the animation is easy:  you justj
  */
 
 .slidified {
@@ -69,6 +77,17 @@
     transform: translate3d(0px, 0px, 0px);
 }
 
+/*
+.slidified.responsive .going-back .slide {
+    left: 198.765%;
+}
+*/
+
+.slidified.responsive .going-back .in-the-hole + .slide,
+.slidified.responsive .slide.instant-transition  {
+    transition-duration:0s !important;
+}
+
 
 /*   these percentages more or less plagarized from bustle.com  <3  -->   */
 
@@ -77,18 +96,18 @@
     width: 100%;
 } 
 .slidified.responsive .slide.at-bat {           
-    left:1.6% !important;
-    width:63.6% !important;
+    left:1.6%;
+    width:63.6%;
 } 
 .slidified.responsive .slide.on-deck {
-    left:67.8% !important;
+    left:67.8%;
 } 
 .slidified.responsive .slide.in-the-hole {
-    left:100.85% !important;
+    left:100.85%;
     opacity:0.4;
 } 
 .slidified.responsive .slide.last-up {
-    left:-31.4% !important;
+    left:-31.4%;
     opacity:0.4;
 } 
 
@@ -119,11 +138,11 @@
 
     /* 
          for some reason the moveSlideOutToTheLeft animation is flickering out,
-         when you have exactly FOUR slides
+         only when you have exactly FOUR slides
 
          this 0.1s delay on the second animation may resolve it (?)
      */
-	/*  -webkit-animation-delay: 0s, 0.1s;    */
+	/*  -webkit-animation-delay: 0s, 0.1s;  */
 }
 
 
@@ -153,7 +172,7 @@
         1. the right most slide moves off the screen to the right
         2. and comes back sliding onto the screen from the left
  */
-.slidified.responsive .going-in-reverse .slide.last-up {
+.slidified.responsive .going-back .slide.last-up {
     transition: none;
 
     -webkit-animation-name: moveSlideOutToTheRight, moveSlideInFromTheLeft;

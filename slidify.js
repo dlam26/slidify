@@ -9,6 +9,9 @@
 //   The 'responsive slider' is literally, completely, ripped off from bustle.com!
 //   It is the bestest carousel/slider!  <3 <3 <3
 //
+//   'right' means 'going ahead'
+//   'left' means 'going backwards'
+//
 //
 //   TODO  11/12/13  there's multiple times in which the 
 //                   entire length of the slider is calculated
@@ -66,7 +69,9 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
             var ACTIVE = 'active';
 
             var GOING_AHEAD = 'going-ahead';
-            var GOING_IN_REVERSE = 'going-in-reverse';
+            var GOING_BACK = 'going-back';
+            var SWITCHED_DIRECTION = 'switched-direction';
+            var INSTANT_TRANSITION = 'instant-transition';
 
             // touch/finger swipe options
             var TOUCH_SIMPLE = 'simple';
@@ -399,6 +404,14 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                     var states = ['last-up', 'at-bat', 'on-deck', 'in-the-hole'];  
                     var selectorCurrent = getSlideSelector(currSlideNum);
                     var currSlide  = slider.find(selectorCurrent);
+                    var firstSlide = slideList.eq(0);
+
+                    if(direction == LEFT && firstSlide.hasClass('in-the-hole')) {
+                        firstSlide.addClass(INSTANT_TRANSITION);
+                    }
+                    else {
+                        firstSlide.removeClass(INSTANT_TRANSITION);
+                    }
 
                     // clear state so as to re-apply them so CSS animations run
                     slideList.removeClass(states.join(' '));
@@ -408,7 +421,6 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                         '     currSlideNum: ' + currSlideNum, 404
                     );
 
-
                     /*
                        iterate through the 4 relevant sibling nodes,
                        applying the state classes in the right order!
@@ -417,11 +429,16 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                     var theEnd = slideList.length - 1;
                     var i, j; 
 
-                    var debugdebug = '';
-
                     if(direction == LEFT) {
 
-                        sliderSlides.addClass(GOING_IN_REVERSE);
+                        if(sliderSlides.hasClass(GOING_AHEAD)) {
+                            sliderSlides.addClass(SWITCHED_DIRECTION);
+                        }
+                        else {
+                            sliderSlides.removeClass(SWITCHED_DIRECTION);
+                        }
+
+                        sliderSlides.addClass(GOING_BACK);
                         sliderSlides.removeClass(GOING_AHEAD);
 
                         //  1. apply the 'on-deck' state the CURRENT slide
@@ -467,8 +484,15 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                     }
                     else if(direction == RIGHT) {
 
+                        if(sliderSlides.hasClass(GOING_BACK)) {
+                            sliderSlides.addClass(SWITCHED_DIRECTION);
+                        }
+                        else {
+                            sliderSlides.removeClass(SWITCHED_DIRECTION);
+                        }
+
                         sliderSlides.addClass(GOING_AHEAD);
-                        sliderSlides.removeClass(GOING_IN_REVERSE);
+                        sliderSlides.removeClass(GOING_BACK);
 
                         //  1. from current position, go as far RIGHT as possible
                         //     applying states
