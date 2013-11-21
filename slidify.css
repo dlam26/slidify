@@ -77,17 +77,6 @@
     transform: translate3d(0px, 0px, 0px);
 }
 
-/*
-.slidified.responsive .going-back .slide {
-    left: 198.765%;
-}
-*/
-
-.slidified.responsive .going-back .in-the-hole + .slide,
-.slidified.responsive .slide.instant-transition  {
-    transition-duration:0s !important;
-}
-
 
 /*   these percentages more or less plagarized from bustle.com  <3  -->   */
 
@@ -111,6 +100,42 @@
     opacity:0.4;
 } 
 
+
+/*  TODO XXX   744px  is like a random number that fits a tablet screen  (?)  */
+
+@media screen and (max-width: 744px) {          
+
+    .slidified.responsive .slide.at-bat {
+        left: 0;
+        width: 100%;
+    }
+    .slidified.responsive .slide.on-deck {
+        left: 100%;
+        width: 100%;
+    }
+    .slidified.responsive .slide.in-the-hole {
+        display:none;
+        transition: none;
+        animation: none;
+    }
+    .slidified.responsive .slide.last-up {
+        opacity: 1; -moz-opacity: 1; -webkit-opacity: 1;
+        left: -100%;
+        width: 100%;
+    }
+}
+
+/*  
+    fix strange looking right-to-left slide zooming
+    across the screen when going backwards
+ */
+.slidified.responsive .going-back .in-the-hole + .slide,
+.slidified.responsive .slide.instant-transition  {
+    transition-duration:0s !important;
+}
+
+
+
 @-webkit-keyframes moveSlideOutToTheLeft {
     from {
         left:-31.4%;
@@ -127,8 +152,6 @@
 		left:100.85%;
 	}
 }
-
-
 .slidified.responsive .going-ahead .slide.in-the-hole {
     transition: none;
 
