@@ -72,9 +72,24 @@
      */
     left: -98.765%;
 
-    transition-duration: 0.77s;         /* <-- NOTE - sync with other instances of 0.77s!  */
+    /* 
+        NOTE - sync with other instances of 0.77s!  
+     */
+    -webkit-transition-duration: 0.77s; 
+    -moz-transition-duration: 0.77s;
+    -o-transition-duration: 0.77s;
+    transition-duration: 0.77s;
+
+    -webkit-transition-timing-function: ease;
+    -moz-transition-timing-function: ease;
+    -o-transition-timing-function: ease;
     transition-timing-function: ease;
-    transform: translate3d(0px, 0px, 0px);
+
+	-webkit-transform: translate3d(0px,0px,0px);
+	-moz-transform: translate3d(0px,0px,0px);
+	-o-transform: translate3d(0px,0px,0px);
+	-ms-transform: translate3d(0px,0px,0px);
+	transform: translate3d(0px,0px,0px)
 }
 
 
@@ -93,10 +108,14 @@
 } 
 .slidified.responsive .slide.in-the-hole {
     left:100.85%;
+    -webkit-opacity:0.4;
+    -moz-opacity:0.4;
     opacity:0.4;
 } 
 .slidified.responsive .slide.last-up {
     left:-31.4%;
+    -webkit-opacity:0.4;
+    -moz-opacity:0.4;
     opacity:0.4;
 } 
 
@@ -115,11 +134,22 @@
     }
     .slidified.responsive .slide.in-the-hole {
         display:none;
+
+		-webkit-transition:none;
+		-moz-transition:none;
+		-o-transition:none;
         transition: none;
-        animation: none;
+
+		-webkit-animation:none;
+		-moz-animation:none;
+		-o-animation:none;
+		animation:none
     }
     .slidified.responsive .slide.last-up {
-        opacity: 1; -moz-opacity: 1; -webkit-opacity: 1;
+        -webkit-opacity:1;
+        -moz-opacity:1;
+        opacity:1;
+
         left: -100%;
         width: 100%;
     }
@@ -131,33 +161,104 @@
  */
 .slidified.responsive .going-back .in-the-hole + .slide,
 .slidified.responsive .slide.instant-transition  {
-    transition-duration:0s !important;
+	-webkit-transition-duration:0s;
+	-moz-transition-duration:0s;
+	-o-transition-duration:0s;
+	transition-duration:0s;
 }
 
 
 
 @-webkit-keyframes moveSlideOutToTheLeft {
-    from {
-        left:-31.4%;
-    }
-	to {
-		left:-98.765%;
-	}
+    from { left:-31.4%; }
+	to   { left:-98.765%; }
 }
+@-moz-keyframes moveSlideOutToTheLeft {
+    from { left:-31.4%; }
+	to   { left:-98.765%; }
+}
+@-o-keyframes moveSlideOutToTheLeft {
+    from { left:-31.4%; }
+	to   { left:-98.765%; }
+}
+@keyframes moveSlideOutToTheLeft {
+    from { left:-31.4%; }
+	to   { left:-98.765%; }
+}
+
+
 @-webkit-keyframes moveSlideInFromTheRight {
-	from {
-		left:130%;
-	}
-	to {
-		left:100.85%;
-	}
+	from { left:130%; }
+	to { left:100.85%; }
 }
+@-moz-keyframes moveSlideInFromTheRight {
+	from { left:130%; }
+	to { left:100.85%; }
+}
+@-o-keyframes moveSlideInFromTheRight {
+	from { left:130%; }
+	to { left:100.85%; }
+}
+@keyframes moveSlideInFromTheRight {
+	from { left:130%; }
+	to { left:100.85%; }
+}
+
+
+@-webkit-keyframes moveSlideOutToTheRight { 
+    from { left: 100.85%; }
+    to   { left: 130.00%; }
+}
+@-moz-keyframes moveSlideOutToTheRight { 
+    from { left: 100.85%; }
+    to   { left: 130.00%; }
+}
+@-o-keyframes moveSlideOutToTheRight { 
+    from { left: 100.85%; }
+    to   { left: 130.00%; }
+}
+@keyframes moveSlideOutToTheRight { 
+    from { left: 100.85%; }
+    to   { left: 130.00%; }
+}
+
+
+@-webkit-keyframes moveSlideInFromTheLeft { 
+    from { left: -60.0%; }
+    to   { left: -31.4%; }
+}
+@-moz-keyframes moveSlideInFromTheLeft { 
+    from { left: -60.0%; }
+    to   { left: -31.4%; }
+}
+@-o-keyframes moveSlideInFromTheLeft { 
+    from { left: -60.0%; }
+    to   { left: -31.4%; }
+}
+@keyframes moveSlideInFromTheLeft { 
+    from { left: -60.0%; }
+    to   { left: -31.4%; }
+}
+
+
 .slidified.responsive .going-ahead .slide.in-the-hole {
+    -webkit-transition:none;
+    -moz-transition:none;
+    -o-transition:none;
     transition: none;
 
 	-webkit-animation-name:  moveSlideOutToTheLeft, moveSlideInFromTheRight;
+	-moz-animation-name:  moveSlideOutToTheLeft, moveSlideInFromTheRight;
+	-o-animation-name:  moveSlideOutToTheLeft, moveSlideInFromTheRight;
+	animation-name:  moveSlideOutToTheLeft, moveSlideInFromTheRight;
 	-webkit-animation-timing-function:ease;
+	-moz-animation-timing-function:ease;
+	-o-animation-timing-function:ease;
+	animation-timing-function:ease;
 	-webkit-animation-duration: 0.77s;
+	-moz-animation-duration: 0.77s;
+	-o-animation-duration: 0.77s;
+	animation-duration: 0.77s;
 
     /* 
          for some reason the moveSlideOutToTheLeft animation is flickering out,
@@ -169,25 +270,6 @@
 }
 
 
-@-webkit-keyframes moveSlideOutToTheRight { 
-    from {
-        left: 100.85%;
-    }
-    to {
-        left: 130.00%;          /*  <-- arbitrary "off screen" value  */
-    }
-}
-@-webkit-keyframes moveSlideInFromTheLeft { 
-
-    from {
-        left: -60.0%;
-    }
-    to {
-        left: -31.4%;
-    }
-}
-
-
 /*  
     Wrap slides when you push the LEFT button.
 
@@ -196,10 +278,21 @@
         2. and comes back sliding onto the screen from the left
  */
 .slidified.responsive .going-back .slide.last-up {
+    -webkit-transition:none;
+    -moz-transition:none;
+    -o-transition:none;
     transition: none;
 
     -webkit-animation-name: moveSlideOutToTheRight, moveSlideInFromTheLeft;
+    -moz-animation-name: moveSlideOutToTheRight, moveSlideInFromTheLeft;
+    -o-animation-name: moveSlideOutToTheRight, moveSlideInFromTheLeft;
+    animation-name: moveSlideOutToTheRight, moveSlideInFromTheLeft;
     -webkit-animation-timing-function:ease;
+    -moz-animation-timing-function:ease;
+    -o-animation-timing-function:ease;
+    animation-timing-function:ease;
     -webkit-animation-duration: 0.77s;
+    -moz-animation-duration: 0.77s;
+    -o-animation-duration: 0.77s;
+    animation-duration: 0.77s;
 }
-
