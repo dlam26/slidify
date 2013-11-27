@@ -119,6 +119,13 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                     debugSlidify('  \'in-the-hole\' at cursor 2', 100);
                     debugSlidify('  \'last-up\' at cursor 3', 101);
                     debugSlidify(DEBUG_LOG_SEPARATOR, 102);
+
+
+                    slider.bind("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd",
+                        function(jqueryEvent) {
+                            enableSlidePageControlButtons();
+                        }
+                    );
                 }
                 else {
                     // the very first slide should be "active", so indicate that
@@ -160,9 +167,6 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                 function doAnimate(direction, doAnimateCallback) {//{{{
 
                     doAnimateCallback = doAnimateCallback || function(){};
-
-                    // disable the next/prev buttons so you can't spam clicks
-                    disableNextPrevButtons();
 
                     var pageControlSelector = opts.pagecontrol + ' .control.on';
 
@@ -602,6 +606,9 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                 function enableSlidePageControlButtons() {//{{{
 
                     slider.find(opts.left).unbind('click').click(function() {
+
+                        disableNextPrevButtons();  // ...so you can't spam clicks
+
                         if(isResponsive) {
                             doCSSAnimationTransition(LEFT);
                         }
@@ -612,6 +619,9 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                     });
 
                     slider.find(opts.right).unbind('click').click(function() {
+
+                        disableNextPrevButtons();  // ...so you can't spam clicks
+
                         if(isResponsive) {
                             doCSSAnimationTransition(RIGHT);
                         }

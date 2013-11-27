@@ -171,10 +171,33 @@
                 $('.slide').click(function(e) {
                     $(e.currentTarget).addClass('animate-bounce');
                 });
+
+
+                /*
+                $(".slide").bind("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd", 
+                    function(evt) {
+                        // see http://www.w3.org/TR/css3-animations/#animationevent
+                        var e = evt.originalEvent;
+
+                        console.log('demo-responsive.html:178   animation done!   elapsedTime: ' + e.elapsedTime + '.  psuedoElement: ' + e.psuedoElement + '   animationName: ' + e.animationName + '  e.currentTarget: ' + e.currentTarget.getAttribute('class'));
+                    }
+                );
+                */
+
+                /*
+                // http://stackoverflow.com/questions/9255279/callback-when-css3-transition-finishes
+                $(".slide").bind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", 
+                    function(){ 
+                        console.log('demo-responsive.html:186   transition done!');
+                    }
+                );
+                */
             });
+
 
         </script>
     </head>
+
     <body>
         <ul class="menu">
             <li> <a href="demo.html">demo.html</a> </li>
