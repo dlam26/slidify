@@ -311,7 +311,7 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                         });
 
                         if(isResponsive) {
-                            nextSlide.animate({ width: '63.6%' }, {
+                            nextSlide.animate({ width: '65.957%' }, {
                                 queue: false
                             });
                         }
