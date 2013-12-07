@@ -681,7 +681,7 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                         return;
                     }
 
-                    if(!IS_TOUCH_NONE) {
+                    if(!IS_TOUCH_NONE && !isResponsive) {
 
                         sliderSlides[0].addEventListener('touchstart', function(e) {
 
