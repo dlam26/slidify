@@ -9,15 +9,22 @@
         <script type="text/javascript" src="slidify.js"></script>
         <link href="slidify.css" rel="stylesheet"/>
         <link href="demo.css" rel="stylesheet"/>
-
         <style type="text/css"> 
 
-/*
-            body {
-                margin-left:300px;
+            #screen-width-displayer,
+            #screen-height-displayer {
+                position:absolute;
+                left: 5;
+                width:150px;
+                height:50px;
+                font-size:18px;
             }
-*/
-
+            #screen-height-displayer {
+                top:25;
+            }
+            #screen-width-displayer {
+                top:5;
+            }
             .background-image {
                 background-position: center center;
                 background-repeat:no-repeat;
@@ -37,8 +44,6 @@
             .slide {
                 background-color:cornflowerblue;
                 height:444px;
-                width:790px;
-
                 top:0%;
             }
             .slide label {
@@ -194,11 +199,19 @@
                 */
             });
 
+            
+            $(window).on("load resize", function(evt) {
+                $('#screen-width-displayer').text($(window).width());
+//                $('#screen-height-displayer').text($(window).height());
+            });
 
         </script>
     </head>
 
     <body>
+        <div id="screen-width-displayer"></div>
+        <!-- <div id="screen-height-displayer"></div> -->
+
         <ul class="menu">
             <li> <a href="demo.html">demo.html</a> </li>
             <li> <a href="responsive-demo.html">responsive-demo.html</a> </li>
