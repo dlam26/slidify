@@ -26,6 +26,8 @@
 //
 //   TODO  11/15/13  defensive program when theres under 4 slides for the 
 //         responsive slider  (it needs a minimum of 4!)
+//
+//   TODO  12/10/13  add constants "responsive mode"  slide states
 
 //
 // NOTE:  doing event.preventDefault can disable the default browser behavior
@@ -37,7 +39,7 @@ var DEBUG_LOG_SEPARATOR = '==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=--==-'
 
 var timesSlidifyRun = 0;
 
-debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' + (arguments[1] || '') + '   ' + arguments[0]); } : function(x) {};
+debugSlidify = DEBUG_SLIDIFY && window.console ? function(line, msg) { console.log('slidify.js:' + (arguments[0] || '') + '   ' + arguments[1]); } : function(x) {};
 
 (function($) {
     // see http://docs.jquery.com/Plugins/Authoring etc.
@@ -114,16 +116,36 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                     slideList.eq(2).addClass('in-the-hole');
                     slideList.eq(-1).addClass('last-up');
 
-                    debugSlidify('   \'at-bat\' at cursor 0', 98);
-                    debugSlidify('   \'on-deck\' at cursor 1', 99);
-                    debugSlidify('  \'in-the-hole\' at cursor 2', 100);
-                    debugSlidify('  \'last-up\' at cursor 3', 101);
-                    debugSlidify(DEBUG_LOG_SEPARATOR, 102);
+//                  debugSlidify('   \'at-bat\' at cursor 0', 98);
+//                  debugSlidify('   \'on-deck\' at cursor 1', 99);
+//                  debugSlidify('  \'in-the-hole\' at cursor 2', 100);
+//                  debugSlidify('  \'last-up\' at cursor 3', 101);
+//                  debugSlidify(DEBUG_LOG_SEPARATOR, 102);
 
-
+                    //  FIXME  does not run on tablet/phone, since the CSS3 
+                    //         animation that does the "slide wrapped from 
+                    //         front to back" do not run.  (only CSS3 transitions run)
+                    /*
                     slider.bind("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd",
                         function(jqueryEvent) {
+                            debugSlidify(125, 'enableSlidePageControlButtons  on  animationend');
                             enableSlidePageControlButtons();
+                        }
+                    );
+                    */
+
+                    slider.bind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd",
+                        function(jqueryEvent) {
+
+                            // picked for a reason:  we get it *irrespective*
+                            // if the next/prev buttons were hit
+                            var END_TRANSITION_STATE = 'at-bat';
+
+                            if($(jqueryEvent.target).hasClass(END_TRANSITION_STATE)) {
+                                enableSlidePageControlButtons();
+                            }
+
+//                             debugSlidify(131,  "CSS transitionend   event.propertyName: " + jqueryEvent.originalEvent.propertyName + '   element classes: ' + $(jqueryEvent.target).attr('class'));
                         }
                     );
                 }
@@ -420,10 +442,10 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                     // clear state so as to re-apply them so CSS animations run
                     slideList.removeClass(states.join(' '));
 
-                    debugSlidify('doCSSAnimationTransition()'  +
-                        '     direction: ' + direction +
-                        '     currSlideNum: ' + currSlideNum, 404
-                    );
+//                     debugSlidify('doCSSAnimationTransition()'  +
+//                         '     direction: ' + direction +
+//                         '     currSlideNum: ' + currSlideNum, 404
+//                     );
 
                     /*
                        iterate through the 4 relevant sibling nodes,
@@ -604,6 +626,7 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                 }//}}}
 
                 function enableSlidePageControlButtons() {//{{{
+//                     debugSlidify(626, 'enableSlidePageControlButtons()');
 
                     slider.find(opts.left).unbind('click').click(function() {
 
@@ -636,6 +659,7 @@ debugSlidify = DEBUG_SLIDIFY ? function(line, msg) { console.log('slidify.js:' +
                 }//}}}
 
                 function disableNextPrevButtons() {//{{{
+//                     debugSlidify(644, 'disableNextPrevButtons()');
                     slider.find([opts.left, opts.right].join(',')).unbind('click');
                 }//}}}
 
